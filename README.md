@@ -1,12 +1,20 @@
 # 9MindTech Quality Engineering Framework
 
-A modern automation testing framework built with Python, Pytest, Playwright, and API testing.
+A modern quality engineering framework built with Python, Pytest, Playwright, and API testing.
 
 ## Features
 - UI automation with Playwright
 - API testing with requests
-- Reusable BasePage architecture
+- BasePage reusable architecture
 - Pytest fixtures
-- HTML test reporting
+- HTML reporting
+- GitHub Actions CI pipeline
+
+## Project Structure
+- `tests/ui` for UI tests
+- `tests/api` for API tests
+- `pages` for page objects
+- `conftest.py` for fixtures
+- `reports` for test reports
 
 Built by 9MindTech.
