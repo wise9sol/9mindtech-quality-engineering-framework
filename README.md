@@ -1,3 +1,5 @@
+![Tests](https://github.com/wise9sol/9mindtech-quality-engineering-framework/actions/workflows/tests.yml/badge.svg)
+
 # 9MindTech Quality Engineering Framework
 
 A modern automation testing framework built with **Python, Pytest, Playwright, and API testing**.
