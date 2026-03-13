@@ -56,32 +56,32 @@ def test_homepage(page):
 
 Clone the repository:
 
-```bash
+'''bash
 git clone https://github.com/wise9sol/9mindtech-quality-engineering-framework.git
 cd 9mindtech-quality-engineering-framework
-```
+'''
 
 Create a virtual environment:
 
-```bash
+'''bash
 python -m venv .venv
-```
+'''
 
 Activate the virtual environment (Windows PowerShell):
 
-```powershell
+'''powershell
 .\.venv\Scripts\Activate.ps1
-```
+'''
 
 Install dependencies:
 
-```bash
+'''bash
 pip install -r requirements.txt
 playwright install
-```
+'''
 
 Run tests:
 
-```bash
+'''bash
 python -m pytest
-```
+'''
