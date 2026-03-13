@@ -67,9 +67,7 @@ Create a virtual environment:
 python -m venv .venv
 ```
 
-Activate the virtual environment:
-
-Windows PowerShell:
+Activate the virtual environment (Windows PowerShell):
 
 ```powershell
 .\.venv\Scripts\Activate.ps1
