@@ -3,3 +3,4 @@ playwright
 requests
 pytest-html
 pytest-xdist
+python-dotenv
