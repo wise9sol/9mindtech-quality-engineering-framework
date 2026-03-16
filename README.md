@@ -151,6 +151,22 @@ This helps accelerate test planning while keeping **human review in the loop**.
 
 ---
 
+## Allure Reporting
+
+This framework supports Allure reporting for interactive test result visualization.
+
+Run tests with Allure results:
+
+```bash
+python -m pytest --alluredir=allure-results
+```
+
+Open the Allure report:
+
+```bash
+allure serve allure-results
+```
+
 # Framework Capabilities
 
 This framework includes:
@@ -165,6 +181,7 @@ This framework includes:
 - Docker test execution
 - GitHub Actions CI pipeline
 - AI-assisted test planning
+- Allure reporting
 
 ---
 

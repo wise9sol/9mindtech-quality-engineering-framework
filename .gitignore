@@ -5,3 +5,5 @@ __pycache__/
 reports/
 .env
 logs/
+allure-results/
+allure-report/
