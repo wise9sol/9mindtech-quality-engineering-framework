@@ -181,7 +181,6 @@ This framework includes:
 - Docker test execution
 - GitHub Actions CI pipeline
 - AI-assisted test planning
-- Allure reporting
 
 ---
 
