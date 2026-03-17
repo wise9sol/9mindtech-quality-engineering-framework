@@ -151,6 +151,33 @@ This helps accelerate test planning while keeping **human review in the loop**.
 
 ---
 
+# Framework Architecture
+
+```
+9mindtech-quality-engineering-framework
+│
+├── pages                # Page Object Models
+│
+├── tests
+│   ├── ui               # UI automation tests
+│   └── api              # API tests
+│
+├── utils
+│   ├── config.py        # environment configuration
+│   └── logger.py        # logging system
+│
+├── tools
+│   └── test_idea_generator.py   # AI-assisted test planning
+│
+├── reports              # HTML reports
+├── logs                 # execution logs
+│
+├── Dockerfile           # container execution
+├── pytest.ini           # pytest configuration
+├── requirements.txt     # dependencies
+```
+
+
 ## Allure Reporting
 
 This framework supports Allure reporting for interactive test result visualization.
