@@ -1,8 +1,13 @@
 ![Tests](https://github.com/wise9sol/9mindtech-quality-engineering-framework/actions/workflows/tests.yml/badge.svg)
 
+
 # 9MindTech Quality Engineering Framework
 
-A modern automation testing framework built with **Python, Pytest, Playwright, and API testing**.
+Designed for modern applications where reliability under real-world conditions is critical.
+
+Built to simulate real user environments and uncover issues traditional automation often misses.
+
+A modern automation testing framework built with Python, Pytest, Playwright, and API testing to ensure application reliability across functional and real-world conditions.
 
 This framework demonstrates a scalable **Quality Engineering architecture** that supports UI automation, API validation, automated reporting, and continuous integration.
 
@@ -10,12 +15,23 @@ This framework demonstrates a scalable **Quality Engineering architecture** that
 
 # Overview
 
-The **9MindTech Quality Engineering Framework** provides an automated testing foundation designed to help software teams deliver reliable applications faster.
+This framework is designed to ensure application reliability across both functional and real-world network conditions.
 
-The framework validates software across multiple layers:
+## Who This Framework Is For
 
-- User Interface Testing
+- Startups building web applications
+- Teams needing reliable CI/CD test automation
+- Products sensitive to network conditions (FinTech, HealthTech, SaaS)
+
+## Value Proposition
+
+This framework helps teams proactively identify real-world reliability issues before they impact users, reducing production failures and improving user experience.
+
+The 9MindTech Quality Engineering Framework provides an automated testing foundation that validates applications across multiple layers:
+
+- UI Automation Testing
 - API Testing
+- Network Reliability Testing
 - Continuous Integration Testing
 
 ---
@@ -24,52 +40,6 @@ The framework validates software across multiple layers:
 
 | Technology | Purpose |
 |-------------|--------|
-| Python | Core programming language |
-| Pytest | Test execution framework |
-| Playwright | Browser automation |
-| Requests | API testing |
-| Pytest-HTML | Test reporting |
-| GitHub Actions | Continuous integration |
-
----
-
-# Key Features
-
-## UI Automation
-
-Browser automation powered by **Playwright**.
-
-Tests validate:
-
-- page loading
-- navigation flows
-- user interface behavior
-
-Example UI test:
-# 9MindTech Quality Engineering Framework
-
-A modern automation testing framework built with **Python, Pytest, Playwright, and API testing**.
-
-This framework demonstrates a scalable **Quality Engineering architecture** that supports UI automation, API validation, automated reporting, and continuous integration.
-
----
-
-# Overview
-
-The **9MindTech Quality Engineering Framework** provides an automated testing foundation designed to help software teams deliver reliable applications faster.
-
-The framework validates software across multiple layers:
-
-- User Interface Testing
-- API Testing
-- Continuous Integration Testing
-
----
-
-# Core Technologies
-
-| Technology | Purpose |
-|-----------|--------|
 | Python | Core programming language |
 | Pytest | Test execution framework |
 | Playwright | Browser automation |
@@ -100,8 +70,43 @@ def test_homepage(page):
 ```
 
 ---
+## API Testing
 
+API validation using Python requests.
+
+Tests verify:
+
+- Response status codes
+- Data integrity
+- API reliability
+
+
+---
+
+## Network Reliability Testing (Advanced)
+
+This framework includes real-world network condition testing, a critical capability for modern applications.
+
+Test scenarios include:
+
+- Normal network baseline
+- Slow network simulation (3G conditions)
+- Offline behavior testing
+
+Artifacts generated:
+
+- Screenshots
+- Playwright trace files
+- HTML reports
+
+### Use Case
+
+Validate whether critical user flows (login, checkout, payments) remain reliable under unstable or degraded network conditions that real users experience.
+
+---
 # Getting Started
+
+Run the framework locally or integrate it into your CI pipeline to begin identifying reliability issues in your application.
 
 ## Clone the Repository
 
@@ -109,108 +114,123 @@ def test_homepage(page):
 git clone https://github.com/wise9sol/9mindtech-quality-engineering-framework.git
 cd 9mindtech-quality-engineering-framework
 ```
-
-## Create a Virtual Environment
-
+---
+## Create Virtual Environment
 ```bash
 python -m venv .venv
 ```
-
-## Activate the Virtual Environment (Windows PowerShell)
+---
+## Activate (Windows PowerShell)
 
 ```powershell
 .\.venv\Scripts\Activate.ps1
 ```
-
+---
 ## Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 playwright install
 ```
+---
 
 ## Run Tests
 
 ```bash
-python -m pytest
+pytest
 ```
+---
+## Run Network Tests Only
 
+```bash
+pytest -m network --browser chromium
+```
 ---
 
-# AI-Assisted Test Planning
+# Framework Architecture
+```
+9mindtech-quality-engineering-framework
+├── tests
+│   ├── ui
+│   ├── api
+│   └── network
+│
+├── utils
+├── reports
+├── artifacts
+│
+├── conftest.py
+├── pytest.ini
+├── requirements.txt
+```
+---
+# Reporting
+## HTML Report
+Generated automatically:
+```
+reports/report.html
+```
+---
+## Allure Report (Optional)
 
-This framework includes a simple **AI-assisted tool for generating test ideas from feature descriptions**.
 
-Example:
+
+
+
+```bash
+pytest --alluredir=allure-results
+allure serve allure-results
+```
+---
+
+## Advanced Capabilities
+
+- UI automation with Playwright
+- API testing
+- Network condition simulation
+- Automatic screenshots on failure
+- Playwright trace capture
+- Structured logging
+- Test markers (smoke, regression, api, network)
+- GitHub Actions CI pipeline
+- Docker execution support
+- Detection of real-world user failure scenarios (slow, unstable, offline networks)
+- Scalable test architecture for growing applications
+
+
+---
+## AI-Assisted Test Planning
+Generates test ideas from feature descriptions:
 
 ```bash
 python tools/test_idea_generator.py
 ```
+---
+## Why This Framework Matters
 
-This helps accelerate test planning while keeping **human review in the loop**.
+Modern applications often fail under real-world conditions such as:
+
+- Slow networks
+- Unstable connections
+- Offline scenarios
+
+## Real-World Impact
+
+This framework is designed to simulate real user environments, helping teams detect issues that traditional test automation often misses.
 
 ---
+# Example Output
 
-# Framework Architecture
+The framework generates:
 
-```
-9mindtech-quality-engineering-framework
-│
-├── pages                # Page Object Models
-│
-├── tests
-│   ├── ui               # UI automation tests
-│   └── api              # API tests
-│
-├── utils
-│   ├── config.py        # environment configuration
-│   └── logger.py        # logging system
-│
-├── tools
-│   └── test_idea_generator.py   # AI-assisted test planning
-│
-├── reports              # HTML reports
-├── logs                 # execution logs
-│
-├── Dockerfile           # container execution
-├── pytest.ini           # pytest configuration
-├── requirements.txt     # dependencies
-```
+- HTML reports (`reports/report.html`)
+- Screenshots of failures
+- Playwright trace files for debugging
+- These outputs provide clear visibility into application behavior under real-world conditions and support faster debugging and issue resolution.
 
-
-## Allure Reporting
-
-This framework supports Allure reporting for interactive test result visualization.
-
-Run tests with Allure results:
-
-```bash
-python -m pytest --alluredir=allure-results
-```
-
-Open the Allure report:
-
-```bash
-allure serve allure-results
-```
-
-# Framework Capabilities
-
-This framework includes:
-
-- UI automation with Playwright
-- API testing
-- Parallel test execution
-- Automatic screenshots on test failure
-- Environment configuration with `.env`
-- Structured logging
-- Test markers (`smoke`, `regression`, `api`)
-- Docker test execution
-- GitHub Actions CI pipeline
-- AI-assisted test planning
+These outputs provide clear visibility into application behavior under real-world conditions.
 
 ---
-
-# License
+## License
 
 This project is part of the **9MindTech Quality Engineering initiative**.
