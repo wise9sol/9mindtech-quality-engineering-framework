@@ -1,41 +1,125 @@
 ![Tests](https://github.com/wise9sol/9mindtech-quality-engineering-framework/actions/workflows/tests.yml/badge.svg)
 
 
-# 9MindTech Quality Engineering Framework
+# 🚀 9MindTech Quality Engineering Framework
 
-Designed for modern applications where reliability under real-world conditions is critical.
+This framework helps teams reduce release bugs by automating critical user flows before production.
 
-Built to simulate real user environments and uncover issues traditional automation often misses.
+QA Automation framework designed to help fast-moving software teams reduce bugs before release.
 
-A modern automation testing framework built with Python, Pytest, Playwright, and API testing to ensure application reliability across functional and real-world conditions.
-
-This framework demonstrates a scalable **Quality Engineering architecture** that supports UI automation, API validation, automated reporting, and continuous integration.
+Built using Python, Pytest, and Playwright to automate critical user flows and improve release confidence.
 
 ---
 
-# Overview
+## 🎯 Who This Is For
 
-This framework is designed to ensure application reliability across both functional and real-world network conditions.
-
-## Who This Framework Is For
-
-- Startups building web applications
-- Teams needing reliable CI/CD test automation
-- Products sensitive to network conditions (FinTech, HealthTech, SaaS)
-
-## Value Proposition
-
-This framework helps teams proactively identify real-world reliability issues before they impact users, reducing production failures and improving user experience.
-
-The 9MindTech Quality Engineering Framework provides an automated testing foundation that validates applications across multiple layers:
-
-- UI Automation Testing
-- API Testing
-- Network Reliability Testing
-- Continuous Integration Testing
+- SaaS startups shipping frequently  
+- Teams relying on manual testing  
+- Products where bugs impact users and revenue  
+- Teams needing CI-ready automation  
 
 ---
 
+## ⚡ What This Solves
+
+Many teams:
+- spend too much time on manual testing  
+- miss critical bugs before release  
+- lack a reliable automation strategy  
+
+This framework provides a **practical automation foundation** to solve those problems quickly.
+
+---
+
+## 📦 What This Framework Does
+
+- UI automation with Playwright  
+- API testing support  
+- Smoke and regression test suites  
+- Automated reporting with artifacts  
+- CI integration with GitHub Actions  
+
+---
+
+## 🧪 Example Test Coverage
+
+- Login / Logout  
+- Authentication flows  
+- Core user journeys  
+- Basic regression scenarios  
+
+---
+
+## 🛠 Tech Stack
+
+- Python  
+- Pytest  
+- Playwright  
+- GitHub Actions  
+
+---
+
+## ⚙️ Quick Start
+
+```bash
+pip install -r requirements.txt
+playwright install
+pytest -m smoke
+```
+---
+## 📊 Test Artifacts
+
+- Screenshots on failure  
+- Playwright traces  
+- HTML reports  
+
+---
+
+## 📸 Sample Test Results
+
+![HTML Test Report](test-report.png)
+
+- Test execution results  
+- Failure screenshots  
+- HTML reports  
+- Playwright traces  
+
+---
+
+## 🔁 CI Integration
+
+Tests run automatically using GitHub Actions to ensure continuous validation.
+
+---
+
+## 💼 Work With 9MindTech
+
+Need QA automation for your product?
+
+I help teams:
+- reduce bugs before release  
+- automate critical workflows  
+- eliminate repetitive testing  
+- build scalable QA systems  
+
+📧 wise9mind.solutions@gmail.com  
+📅 https://calendly.com/9mindtech_qa-automation-call
+
+---
+
+## 🔥 Why 9MindTech
+
+- Focus on real-world reliability, not just test scripts  
+- Built for speed and practical implementation  
+- Designed to deliver immediate business value  
+
+---
+
+## 🧭 Mission
+Build systems that catch issues before your users do.
+
+
+---
 # Core Technologies
 
 | Technology | Purpose |
@@ -172,10 +256,6 @@ reports/report.html
 ```
 ---
 ## Allure Report (Optional)
-
-
-
-
 
 ```bash
 pytest --alluredir=allure-results
