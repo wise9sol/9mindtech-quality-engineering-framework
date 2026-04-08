@@ -77,7 +77,9 @@ pytest -m smoke
 
 ## 📸 Sample Test Results
 
-![HTML Test Report](test-report.png)
+![HTML Test Report](docs/images/test-report.png)
+
+This report shows automated test execution including both passing and failing scenarios, demonstrating real-world issue detection.
 
 - Test execution results  
 - Failure screenshots  
