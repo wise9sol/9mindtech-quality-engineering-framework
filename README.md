@@ -3,8 +3,6 @@
 
 # 🚀 9MindTech Quality Engineering Framework
 
-# 🚀 9MindTech Quality Engineering Framework
-
 This QA automation framework helps fast-moving software teams reduce release bugs by automating critical user flows before production.
 ---
 
