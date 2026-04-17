@@ -3,12 +3,9 @@
 
 # 🚀 9MindTech Quality Engineering Framework
 
-This framework helps teams reduce release bugs by automating critical user flows before production.
+# 🚀 9MindTech Quality Engineering Framework
 
-QA Automation framework designed to help fast-moving software teams reduce bugs before release.
-
-Built using Python, Pytest, and Playwright to automate critical user flows and improve release confidence.
-
+This QA automation framework helps fast-moving software teams reduce release bugs by automating critical user flows before production.
 ---
 
 ## 🎯 Who This Is For
@@ -77,7 +74,7 @@ pytest -m smoke
 
 ## 📸 Sample Test Results
 
-![HTML Test Report](docs/images/test-report.png)
+![Failure Screenshot Artifact](docs/images/test-report.png)
 
 This report shows automated test execution including both passing and failing scenarios, demonstrating real-world issue detection.
 
