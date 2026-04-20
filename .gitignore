@@ -1,4 +1,4 @@
-.venv/
+﻿.venv/
 .idea/
 .pytest_cache/
 __pycache__/
@@ -7,3 +7,5 @@ reports/
 logs/
 allure-results/
 allure-report/
+ai_test_output.txt
+*.pyc
