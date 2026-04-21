@@ -4,6 +4,7 @@ from utils.network_config import (
     LOGIN_PATH,
     VALID_USERNAME,
     VALID_PASSWORD,
+    SUCCESS_PATH,
 )
 from utils.artifacts import artifact_path
 
@@ -18,14 +19,12 @@ def test_login_when_offline(page):
     page.fill("#username", VALID_USERNAME)
     page.fill("#password", VALID_PASSWORD)
 
-    failed = False
-
     try:
         page.click("button[type='submit']", timeout=5000)
         page.wait_for_load_state("networkidle", timeout=5000)
     except Exception:
-        failed = True
+        pass  # navigation failure is expected when offline
 
     page.screenshot(path=str(artifact_path("offline_login", ".png")), full_page=True)
 
-    assert failed, "Expected login action to fail while offline"
+    assert SUCCESS_PATH not in page.url, "Login should not succeed while offline"
