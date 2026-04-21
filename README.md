@@ -140,7 +140,7 @@ This framework is open source and free to use. If you want it set up, customised
 
 Book a free 30-minute QA audit — we'll review your current test coverage and show you exactly what's missing.
 
-- Calendly: https://calendly.com/9mindtech
+- - Calendly: https://calendly.com/9mindtech_qa-automation-call
 - Email: wise9mind.solutions@gmail.com
 
 > 9MindTech specialises in building quality engineering systems for startups and scaling SaaS teams. We set up frameworks like this, integrate them into your pipeline, and train your team to maintain them.
