@@ -1,312 +1,146 @@
+
 ![CI](https://github.com/wise9sol/9mindtech-quality-engineering-framework/actions/workflows/tests.yml/badge.svg)
+![Python](https://img.shields.io/badge/python-3.11-blue)
+![Playwright](https://img.shields.io/badge/playwright-latest-green)
+![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
-# 🚀 9MindTech Quality Engineering Framework
+# 9MindTech Quality Engineering Framework
 
-This QA automation framework helps fast-moving software teams reduce release bugs by automating critical user flows before production.
----
-
-## 🎯 Who This Is For
-
-- SaaS startups shipping frequently  
-- Teams relying on manual testing  
-- Products where bugs impact users and revenue  
-- Teams needing CI-ready automation  
+A production-ready test automation framework for teams that ship fast and break nothing. Built and maintained by [9MindTech](https://github.com/wise9sol) — QA consulting for startups and scaling SaaS teams.
 
 ---
 
-## ⚡ What This Solves
+## Who This Is For
 
-Many teams:
-- spend too much time on manual testing  
-- miss critical bugs before release  
-- lack a reliable automation strategy  
-
-This framework provides a **practical automation foundation** to solve those problems quickly.
+- SaaS startups shipping frequently
+- Teams relying on manual testing
+- Products where bugs impact users and revenue
+- Teams needing CI-ready automation fast
 
 ---
 
-## 📦 What This Framework Does
+## What This Solves
 
-- UI automation with Playwright  
-- API testing support  
-- Smoke and regression test suites  
-- Automated reporting with artifacts  
-- CI integration with GitHub Actions  
+Most teams catch bugs too late — after they've already hit production. This framework shifts testing left, automating critical user flows so bugs are caught before release, not after.
 
 ---
 
-## 🧪 Example Test Coverage
+## What's in the Box
 
-- Login / Logout  
-- Authentication flows  
-- Core user journeys  
-- Basic regression scenarios  
-
----
-
-## 🛠 Tech Stack
-
-- Python  
-- Pytest  
-- Playwright  
-- GitHub Actions  
+| Layer | Technology | Coverage |
+|---|---|---|
+| UI / Browser | Playwright + Page Object Model | Login, auth flows, core user journeys |
+| API | pytest + requests | Status, schema, CRUD, data integrity |
+| Network | Playwright | Offline and slow network scenarios |
+| CI/CD | GitHub Actions | Runs on every push |
+| Reporting | pytest-html + Allure | HTML report uploaded as artifact |
 
 ---
 
-## ⚙️ Quick Start
+## Get Running in 5 Minutes
 
-```bash
-pip install -r requirements.txt
-playwright install
-pytest -m smoke
-```
----
-## 📊 Test Artifacts
-
-- Screenshots on failure  
-- Playwright traces  
-- HTML reports  
-
----
-
-## 📸 Sample Test Results
-
-![Failure Screenshot Artifact](docs/images/test-report.png)
-
-This report shows automated test execution including both passing and failing scenarios, demonstrating real-world issue detection.
-
-- Test execution results  
-- Failure screenshots  
-- HTML reports  
-- Playwright traces  
-
----
-
-## 🔁 CI Integration
-
-Tests run automatically using GitHub Actions to ensure continuous validation.
-
----
-
-## 💼 Work With 9MindTech
-
-Need QA automation for your product?
-
-I help teams:
-- reduce bugs before release  
-- automate critical workflows  
-- eliminate repetitive testing  
-- build scalable QA systems  
-
-📧 wise9mind.solutions@gmail.com  
-📅 https://calendly.com/9mindtech_qa-automation-call
-
----
-
-## 🔥 Why 9MindTech
-
-- Focus on real-world reliability, not just test scripts  
-- Built for speed and practical implementation  
-- Designed to deliver immediate business value  
-
----
-
-## 🧭 Mission
-Build systems that catch issues before your users do.
-
-
----
-# Core Technologies
-
-| Technology | Purpose |
-|-------------|--------|
-| Python | Core programming language |
-| Pytest | Test execution framework |
-| Playwright | Browser automation |
-| Requests | API testing |
-| Pytest-HTML | Test reporting |
-| GitHub Actions | Continuous integration |
-
----
-
-# Key Features
-
-## UI Automation
-
-Browser automation powered by **Playwright**.
-
-Tests validate:
-
-- Page loading
-- Navigation flows
-- User interface behavior
-
-### Example UI Test
-
-```python
-def test_homepage(page):
-    page.goto("https://example.com")
-    assert page.title() == "Example Domain"
-```
-
----
-## API Testing
-
-API validation using Python requests.
-
-Tests verify:
-
-- Response status codes
-- Data integrity
-- API reliability
-
-
----
-
-## Network Reliability Testing (Advanced)
-
-This framework includes real-world network condition testing, a critical capability for modern applications.
-
-Test scenarios include:
-
-- Normal network baseline
-- Slow network simulation (3G conditions)
-- Offline behavior testing
-
-Artifacts generated:
-
-- Screenshots
-- Playwright trace files
-- HTML reports
-
-### Use Case
-
-Validate whether critical user flows (login, checkout, payments) remain reliable under unstable or degraded network conditions that real users experience.
-
----
-# Getting Started
-
-Run the framework locally or integrate it into your CI pipeline to begin identifying reliability issues in your application.
-
-## Clone the Repository
+**1. Clone and install**
 
 ```bash
 git clone https://github.com/wise9sol/9mindtech-quality-engineering-framework.git
 cd 9mindtech-quality-engineering-framework
-```
----
-## Create Virtual Environment
-```bash
-python -m venv .venv
-```
----
-## Activate (Windows PowerShell)
-
-```powershell
-.\.venv\Scripts\Activate.ps1
-```
----
-## Install Dependencies
-
-```bash
 pip install -r requirements.txt
-playwright install
+playwright install chromium
 ```
----
 
-## Run Tests
+**2. Run the full suite**
 
 ```bash
 pytest
 ```
----
-## Run Network Tests Only
+
+**3. Run just API tests (no browser needed)**
 
 ```bash
-pytest -m network --browser chromium
+pytest tests/api/ -v
 ```
+
+**4. Run just UI tests**
+
+```bash
+pytest tests/ui/ -v
+```
+
+**5. View the HTML report**
+
+After any test run, open `reports/report.html` in your browser.
+
 ---
 
-# Framework Architecture
+## Project Structure
+
 ```
-9mindtech-quality-engineering-framework
-├── tests
-│   ├── ui
-│   ├── api
-│   └── network
+├── conftest.py                  # Shared fixtures: browser, API session, test data
+├── pytest.ini                   # Test runner config, markers, reporting
+├── requirements.txt             # Pinned dependencies for reproducible CI
 │
-├── utils
-├── reports
-├── artifacts
+├── pages/                       # Page Object Model
+│   ├── base_page.py             # Base class: wait strategies, screenshot on failure
+│   └── playwright_docs_page.py  # Example page object (swap for your app)
 │
-├── conftest.py
-├── pytest.ini
-├── requirements.txt
+├── tests/
+│   ├── ui/
+│   │   ├── test_login.py            # Smoke: homepage load, core UI elements
+│   │   ├── test_page_load.py        # Page title, navbar, heading, content
+│   │   ├── test_navigation.py       # Search, links, broken images
+│   │   └── test_responsive.py       # Mobile, tablet, desktop viewports
+│   ├── api/
+│   │   ├── test_api_status.py       # API health check
+│   │   ├── test_get_requests.py     # GET: status, schema, performance SLA
+│   │   ├── test_write_operations.py # POST/PUT/PATCH/DELETE: full CRUD
+│   │   └── test_data_integrity.py   # FK integrity, uniqueness, edge cases
+│   └── network/
+│       ├── test_normal_login.py     # Standard network conditions
+│       ├── test_offline_login.py    # Offline behaviour
+│       └── test_slow_login.py       # Throttled network conditions
+│
+└── .github/
+    └── workflows/tests.yml      # CI pipeline: test, report, artifact upload
 ```
+
 ---
-# Reporting
-## HTML Report
-Generated automatically:
-```
-reports/report.html
-```
+
+## Tech Stack
+
+- Python 3.11
+- pytest
+- Playwright
+- requests
+- GitHub Actions
+- pytest-html / Allure
+
 ---
-## Allure Report (Optional)
+
+## Adapting to Your Application
+
+This framework is designed to be dropped onto any web app or API in under an hour.
+
+**To test your own UI:** Copy `pages/playwright_docs_page.py`, rename it, and replace the selectors and URL. The `BasePage` class handles all wait logic — you just define locators.
+
+**To test your own API:** Update `BASE_URL` in `conftest.py` to your staging environment. The API test structure works against any REST API.
+
+**Environment variables for CI:**
 
 ```bash
-pytest --alluredir=allure-results
-allure serve allure-results
+export BASE_URL=https://staging.yourapp.com/api
+export UI_BASE_URL=https://staging.yourapp.com
+pytest
 ```
----
-
-## Advanced Capabilities
-
-- UI automation with Playwright
-- API testing
-- Network condition simulation
-- Automatic screenshots on failure
-- Playwright trace capture
-- Structured logging
-- Test markers (smoke, regression, api, network)
-- GitHub Actions CI pipeline
-- Docker execution support
-- Detection of real-world user failure scenarios (slow, unstable, offline networks)
-- Scalable test architecture for growing applications
-
 
 ---
-## AI-Assisted Test Planning
-Generates test ideas from feature descriptions:
 
-```bash
-python tools/test_idea_generator.py
-```
----
-## Why This Framework Matters
+## Work With Us
 
-Modern applications often fail under real-world conditions such as:
+This framework is open source and free to use. If you want it set up, customised, and integrated into your pipeline by the team that built it:
 
-- Slow networks
-- Unstable connections
-- Offline scenarios
+Book a free 30-minute QA audit — we'll review your current test coverage and show you exactly what's missing.
 
-## Real-World Impact
+- Calendly: https://calendly.com/9mindtech
+- Email: hello@9mindtech.com
 
-This framework is designed to simulate real user environments, helping teams detect issues that traditional test automation often misses.
-
----
-# Example Output
-
-The framework generates:
-
-- HTML reports (`reports/report.html`)
-- Screenshots of failures
-- Playwright trace files for debugging
-- These outputs provide clear visibility into application behavior under real-world conditions and support faster debugging and issue resolution.
-
-These outputs provide clear visibility into application behavior under real-world conditions.
-
----
-## License
-
-This project is part of the **9MindTech Quality Engineering initiative**.
+> 9MindTech specialises in building quality engineering systems for startups and scaling SaaS teams. We set up frameworks like this, integrate them into your pipeline, and train your team to maintain them.
