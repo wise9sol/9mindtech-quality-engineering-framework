@@ -23,3 +23,5 @@ jobs:
         run: python -m pytest --tb=short --ignore=tests/network
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      - name: Run offline network test
+        run: python -m pytest --tb=short tests/network/test_offline_login.py

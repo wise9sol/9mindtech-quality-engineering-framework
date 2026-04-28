@@ -5,7 +5,7 @@ class LoginPage(BasePage):
 
     username = "#username"
     password = "#password"
-    login_button = "#login"
+    login_button = "button[type='submit']"
 
     def login(self, user, pwd):
         self.fill(self.username, user)

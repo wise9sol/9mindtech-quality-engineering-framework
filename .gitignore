@@ -9,3 +9,7 @@ allure-results/
 allure-report/
 ai_test_output.txt
 *.pyc
+
+artifacts/
+reports/
+allure-results/
