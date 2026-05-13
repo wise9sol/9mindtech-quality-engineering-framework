@@ -110,8 +110,15 @@ docker-compose.override.yml
 playwright-report/
 test-results/
 
+# ── Next.js / Node ────────────────────────────────────────────────────────────
+node_modules/
+.next/
+next-env.d.ts
+
 # ── Misc artifacts ────────────────────────────────────────────────────────────
 artifacts/
 ai_test_output.txt
 *.tmp
 *.bak
+ss_*.png
+website_screenshot.png
