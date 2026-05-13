@@ -11,7 +11,7 @@ from pathlib import Path
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent))
 
-from ai.client import get_client
+from ai.client import get_client, CLAUDE_MODEL
 
 # Import your actual page objects
 from pages.login_page import LoginPage
@@ -44,9 +44,8 @@ Example output: login_page.click_submit_button()"""
 
     try:
         response = client.messages.create(
-            model="claude-3-sonnet-20241022",
+            model=CLAUDE_MODEL,
             max_tokens=100,
-            temperature=0,
             messages=[{"role": "user", "content": prompt}]
         )
         code = response.content[0].text.strip()

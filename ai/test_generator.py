@@ -9,6 +9,34 @@ from datetime import date
 from pathlib import Path
 from ai.client import get_client, CLAUDE_MODEL, TOKENS
 
+
+def translate_natural_language_steps(steps: list[str], page_objects: list[str]) -> list[str]:
+    """Convert a list of plain English steps to executable code."""
+    client = get_client()
+    results = []
+
+    for step in steps:
+        prompt = f"""You are a test automation expert. Convert this natural language test step into a Python method call.
+
+Available methods (use only these):
+{chr(10).join(f'- {m}' for m in page_objects)}
+
+Step: "{step}"
+
+Return ONLY the Python code. No explanations, no markdown, no backticks.
+Example output: login_page.click_submit_button()"""
+
+        response = client.messages.create(
+            model=CLAUDE_MODEL,
+            max_tokens=100,
+            messages=[{"role": "user", "content": prompt}],
+        )
+        code = response.content[0].text.strip()
+        code = code.replace("```python", "").replace("```", "").strip()
+        results.append(code)
+
+    return results
+
 SYSTEM_PROMPT = """You are an elite QA automation engineer working inside the 9MindTech framework.
 
 RULES — follow exactly:

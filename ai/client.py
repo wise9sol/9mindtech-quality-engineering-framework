@@ -30,7 +30,7 @@ def get_client() -> Anthropic:
 
 
 # Model — change only with team approval and CLAUDE.md update
-CLAUDE_MODEL = "claude-sonnet-4-5"
+CLAUDE_MODEL = "claude-sonnet-4-6"
 
 # Token budgets per use case
 TOKENS = {

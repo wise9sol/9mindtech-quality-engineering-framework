@@ -1,15 +1,117 @@
-﻿.venv/
-.idea/
-.pytest_cache/
+# ── Python ────────────────────────────────────────────────────────────────────
 __pycache__/
-reports/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+
+# ── Virtual environments ───────────────────────────────────────────────────────
+.venv/
+venv/
+env/
+ENV/
+.env.bak
+
+# ── Environment / secrets ──────────────────────────────────────────────────────
 .env
-logs/
+.env.local
+.env.*.local
+*.key
+*.pem
+*.p12
+
+# ── FastAPI / Uvicorn ─────────────────────────────────────────────────────────
+*.pid
+
+# ── pytest ────────────────────────────────────────────────────────────────────
+.pytest_cache/
+.cache/
+pytestdebug.log
+
+# ── Generated test files (QualiOps AI output) ─────────────────────────────────
+tests/generated/
+
+# ── Reports (auto-generated — never commit) ────────────────────────────────────
+reports/
 allure-results/
 allure-report/
-ai_test_output.txt
-*.pyc
+*.html
+!docs/**/*.html
 
+# ── Logs ──────────────────────────────────────────────────────────────────────
+logs/
+*.log
+healer.log
+
+# ── Coverage ──────────────────────────────────────────────────────────────────
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+
+# ── Type checking / linting ────────────────────────────────────────────────────
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.ruff_cache/
+
+# ── Distribution / packaging ───────────────────────────────────────────────────
+dist/
+build/
+*.egg-info/
+*.egg
+MANIFEST
+.eggs/
+wheels/
+
+# ── Jupyter ───────────────────────────────────────────────────────────────────
+.ipynb_checkpoints/
+*.ipynb
+
+# ── macOS ─────────────────────────────────────────────────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# ── Windows ───────────────────────────────────────────────────────────────────
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ── IDE — VS Code ─────────────────────────────────────────────────────────────
+.vscode/
+*.code-workspace
+
+# ── IDE — JetBrains / PyCharm ─────────────────────────────────────────────────
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# ── IDE — other ───────────────────────────────────────────────────────────────
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# ── Docker ────────────────────────────────────────────────────────────────────
+.dockerignore
+docker-compose.override.yml
+
+# ── Playwright ────────────────────────────────────────────────────────────────
+playwright-report/
+test-results/
+
+# ── Misc artifacts ────────────────────────────────────────────────────────────
 artifacts/
-reports/
-allure-results/
+ai_test_output.txt
+*.tmp
+*.bak
