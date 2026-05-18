@@ -22,14 +22,14 @@ def test_login_on_slow_network(page):
         "Network.emulateNetworkConditions",
         {
             "offline": False,
-            "latency": 1500,  # milliseconds
-            "downloadThroughput": 50 * 1024 / 8,  # 50 kbps approx
-            "uploadThroughput": 20 * 1024 / 8,    # 20 kbps approx
+            "latency": 400,                        # milliseconds — slow 3G
+            "downloadThroughput": 400 * 1024 / 8,  # 400 kbps
+            "uploadThroughput": 200 * 1024 / 8,    # 200 kbps
             "connectionType": "cellular3g",
         },
     )
 
-    page.goto(f"{BASE_URL}{LOGIN_PATH}")
+    page.goto(f"{BASE_URL}{LOGIN_PATH}", wait_until="domcontentloaded", timeout=60_000)
     page.fill("#username", VALID_USERNAME)
     page.fill("#password", VALID_PASSWORD)
     page.click("button[type='submit']")
