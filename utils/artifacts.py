@@ -3,6 +3,7 @@ from datetime import datetime
 
 
 def artifact_path(prefix: str, suffix: str) -> Path:
+    """Return a timestamped path inside the artifacts/ directory."""
     folder = Path("artifacts")
     folder.mkdir(exist_ok=True)
 
