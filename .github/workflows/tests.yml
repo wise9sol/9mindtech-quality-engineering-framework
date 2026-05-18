@@ -36,6 +36,16 @@ jobs:
         run: python -m pytest -m smoke --tb=short
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      - name: Upload smoke reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-reports
+          path: |
+            reports/report.html
+            reports/allure-results/
+            reports/screenshots/
+          retention-days: 14
 
   api:
     needs: lint
@@ -51,6 +61,15 @@ jobs:
         run: python -m pytest -m api --tb=short
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      - name: Upload API reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-reports
+          path: |
+            reports/report.html
+            reports/allure-results/
+          retention-days: 14
 
   regression:
     needs: [smoke, api]
@@ -70,3 +89,14 @@ jobs:
         run: python -m pytest -m regression -n auto --tb=short
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      - name: Upload regression reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: regression-reports
+          path: |
+            reports/report.html
+            reports/allure-results/
+            reports/ai_analysis/
+            reports/screenshots/
+          retention-days: 14
