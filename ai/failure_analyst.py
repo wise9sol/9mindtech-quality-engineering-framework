@@ -15,7 +15,7 @@ OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 SYSTEM_PROMPT = """You are a senior QA engineer performing root cause analysis for 9MindTech.
 
-Given a list of failing test results from an Allure JSON report, produce a clear, 
+Given a list of failing test results from an Allure JSON report, produce a clear,
 actionable analysis. Be direct and specific — no fluff.
 
 Structure your response EXACTLY like this (use these headers):
@@ -40,6 +40,7 @@ all login tests failing = auth regression, flaky timing = missing waits).
 @dataclass
 class FailureReport:
     """Structured output from the failure analyst."""
+
     total_tests: int
     failed_count: int
     ai_analysis: str
@@ -53,6 +54,7 @@ class FailureReport:
 @dataclass
 class FailedTest:
     """Extracted data from a single failing Allure result."""
+
     name: str
     status: str
     error_message: str
@@ -60,7 +62,9 @@ class FailedTest:
     labels: list[str] = field(default_factory=list)
 
 
-def load_allure_results(results_dir: str = "reports/allure-results") -> list[FailedTest]:
+def load_allure_results(
+    results_dir: str = "reports/allure-results",
+) -> list[FailedTest]:
     """
     Parse Allure JSON result files and extract failing tests.
 
@@ -84,13 +88,15 @@ def load_allure_results(results_dir: str = "reports/allure-results") -> list[Fai
             status_detail = data.get("statusDetails", {})
             labels = [label.get("value", "") for label in data.get("labels", [])]
 
-            failed.append(FailedTest(
-                name=data.get("fullName", data.get("name", "Unknown")),
-                status=data.get("status", "unknown"),
-                error_message=status_detail.get("message", "No error message"),
-                stack_trace=status_detail.get("trace", "No stack trace")[:500],
-                labels=labels,
-            ))
+            failed.append(
+                FailedTest(
+                    name=data.get("fullName", data.get("name", "Unknown")),
+                    status=data.get("status", "unknown"),
+                    error_message=status_detail.get("message", "No error message"),
+                    stack_trace=status_detail.get("trace", "No stack trace")[:500],
+                    labels=labels,
+                )
+            )
         except (json.JSONDecodeError, KeyError):
             continue
 
@@ -134,7 +140,9 @@ Trace (excerpt): {test.stack_trace[:200]}
 """
 
     if len(failed_tests) > 20:
-        failures_text += f"\n... and {len(failed_tests) - 20} more failures (truncated for analysis)"
+        failures_text += (
+            f"\n... and {len(failed_tests) - 20} more failures (truncated for analysis)"
+        )
 
     prompt = f"""Analyze these test failures from the 9MindTech QA suite.
 
@@ -210,9 +218,9 @@ def run_analysis(results_dir: str = "reports/allure-results") -> FailureReport:
     print("[Failure Analyst] Running AI analysis...")
     report = analyze_failures(failed)
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print(report.ai_analysis)
-    print("="*60 + "\n")
+    print("=" * 60 + "\n")
 
     return report
 
@@ -220,5 +228,6 @@ def run_analysis(results_dir: str = "reports/allure-results") -> FailureReport:
 # ── CLI usage ──────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     import sys
+
     results_dir = sys.argv[1] if len(sys.argv) > 1 else "reports/allure-results"
     run_analysis(results_dir)

@@ -4,18 +4,15 @@ Test the natural language to page object translation.
 This is the seed of your business.
 """
 
-import os
 import sys
 from pathlib import Path
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent))
 
-from ai.client import get_client, CLAUDE_MODEL
-
-# Import your actual page objects
-from pages.login_page import LoginPage
-from pages.home_page import HomePage
+from ai.client import get_client, CLAUDE_MODEL  # noqa: E402
+from pages.login_page import LoginPage  # noqa: E402, F401
+from pages.home_page import HomePage  # noqa: E402, F401
 
 
 def translate_step_to_code(step_text: str, available_methods: list[str]) -> str:
@@ -46,7 +43,7 @@ Example output: login_page.click_submit_button()"""
         response = client.messages.create(
             model=CLAUDE_MODEL,
             max_tokens=100,
-            messages=[{"role": "user", "content": prompt}]
+            messages=[{"role": "user", "content": prompt}],
         )
         code = response.content[0].text.strip()
         # Remove any markdown formatting if present
@@ -73,7 +70,7 @@ def main():
         "login_page.enter_password('secret')",
         "login_page.wait_for_login_success()",
         "home_page.verify_dashboard_visible()",
-        "home_page.click_navigation_item('Trading')"
+        "home_page.click_navigation_item('Trading')",
     ]
 
     print(f"   Available: {', '.join(available_methods[:3])}...")

@@ -19,7 +19,7 @@ from ai.client import get_client, CLAUDE_MODEL
 app = FastAPI(
     title="QualiOps AI Quality Engine",
     description="Natural language test automation with AI self-healing",
-    version="1.0.0"
+    version="1.0.0",
 )
 
 PROJECT_ROOT = Path(__file__).parent
@@ -35,8 +35,9 @@ run_status: dict = {}
 
 class TestRunRequest(BaseModel):
     """Payload a client sends to start a test run."""
+
     client_id: str
-    test_spec: str          # Plain-English description of what to test
+    test_spec: str  # Plain-English description of what to test
     webhook_url: Optional[str] = None
 
 
@@ -45,6 +46,7 @@ class TestStep(BaseModel):
 
 
 # ── Endpoints ──────────────────────────────────────────────────────────────────
+
 
 @app.get("/")
 def root():
@@ -130,6 +132,7 @@ def get_report(run_id: str):
 
 # ── Background execution ────────────────────────────────────────────────────────
 
+
 def execute_test_suite(run_id: str, request: TestRunRequest) -> None:
     """
     Generate a pytest test from the natural-language spec, run it with the
@@ -150,9 +153,7 @@ def execute_test_suite(run_id: str, request: TestRunRequest) -> None:
 
         # 3 — Add project root to PYTHONPATH so page object imports resolve
         env = os.environ.copy()
-        env["PYTHONPATH"] = (
-            str(PROJECT_ROOT) + os.pathsep + env.get("PYTHONPATH", "")
-        )
+        env["PYTHONPATH"] = str(PROJECT_ROOT) + os.pathsep + env.get("PYTHONPATH", "")
 
         # 4 — Run pytest
         #   --override-ini addopts=  clears the global --html flag from pytest.ini
@@ -166,9 +167,11 @@ def execute_test_suite(run_id: str, request: TestRunRequest) -> None:
                 str(test_file),
                 "-v",
                 "--tb=short",
-                "--override-ini", "addopts=",
+                "--override-ini",
+                "addopts=",
                 f"--alluredir={allure_dir}",
-                "--browser", "chromium",
+                "--browser",
+                "chromium",
             ],
             capture_output=True,
             text=True,
@@ -177,17 +180,20 @@ def execute_test_suite(run_id: str, request: TestRunRequest) -> None:
             timeout=300,
         )
 
-        run_status[run_id].update({
-            "status": "passed" if result.returncode == 0 else "failed",
-            "completed_at": datetime.now().isoformat(),
-            "stdout": result.stdout[-2000:],
-            "stderr": result.stderr[-500:],
-            "report_path": str(allure_dir),
-        })
+        run_status[run_id].update(
+            {
+                "status": "passed" if result.returncode == 0 else "failed",
+                "completed_at": datetime.now().isoformat(),
+                "stdout": result.stdout[-2000:],
+                "stderr": result.stderr[-500:],
+                "report_path": str(allure_dir),
+            }
+        )
 
         # 5 — Notify via webhook if the caller provided one
         if request.webhook_url:
             import requests as _req
+
             try:
                 _req.post(
                     request.webhook_url,
@@ -209,6 +215,7 @@ def execute_test_suite(run_id: str, request: TestRunRequest) -> None:
 
 
 # ── AI test generation ──────────────────────────────────────────────────────────
+
 
 def generate_test_from_spec(spec: str) -> str:
     """
@@ -297,4 +304,5 @@ RULES:
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000)

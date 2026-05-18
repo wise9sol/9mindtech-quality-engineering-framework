@@ -20,6 +20,7 @@ def _timestamp() -> str:
 
 # ── Fixtures ───────────────────────────────────────────────────────────────────
 
+
 @pytest.fixture(scope="session")
 def api_base_url() -> str:
     """Base URL for API tests. Reads API_BASE_URL from .env."""
@@ -51,6 +52,7 @@ def page(context):
 
 
 # ── Hooks ──────────────────────────────────────────────────────────────────────
+
 
 def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
     if exitstatus not in (0, 5):  # 0 = all passed, 5 = no tests collected

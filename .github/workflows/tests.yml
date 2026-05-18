@@ -15,9 +15,9 @@ jobs:
       - name: Install lint tools
         run: pip install flake8 black
       - name: flake8
-        run: flake8 . --exclude=.venv,reports --max-line-length=120
+        run: flake8 . --exclude=.venv,reports,website --max-line-length=120
       - name: black
-        run: black --check . --exclude ".venv|reports"
+        run: black --check . --exclude ".venv|reports|website"
 
   smoke:
     needs: lint

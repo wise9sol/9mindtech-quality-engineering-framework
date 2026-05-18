@@ -10,7 +10,9 @@ from pathlib import Path
 from ai.client import get_client, CLAUDE_MODEL, TOKENS
 
 
-def translate_natural_language_steps(steps: list[str], page_objects: list[str]) -> list[str]:
+def translate_natural_language_steps(
+    steps: list[str], page_objects: list[str]
+) -> list[str]:
     """Convert a list of plain English steps to executable code."""
     client = get_client()
     results = []
@@ -36,6 +38,7 @@ Example output: login_page.click_submit_button()"""
         results.append(code)
 
     return results
+
 
 SYSTEM_PROMPT = """You are an elite QA automation engineer working inside the 9MindTech framework.
 

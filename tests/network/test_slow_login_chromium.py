@@ -22,9 +22,9 @@ def test_login_on_slow_network(page):
         "Network.emulateNetworkConditions",
         {
             "offline": False,
-            "latency": 400,                        # milliseconds — slow 3G
+            "latency": 400,  # milliseconds — slow 3G
             "downloadThroughput": 400 * 1024 / 8,  # 400 kbps
-            "uploadThroughput": 200 * 1024 / 8,    # 200 kbps
+            "uploadThroughput": 200 * 1024 / 8,  # 200 kbps
             "connectionType": "cellular3g",
         },
     )

@@ -28,9 +28,10 @@ healer_log = logging.getLogger("self_healer")
 @dataclass
 class HealedLocator:
     """Result from the self-healing agent."""
+
     original: str
-    suggested: list[str]          # Ranked best → worst
-    confidence: str               # "high" | "medium" | "low"
+    suggested: list[str]  # Ranked best → worst
+    confidence: str  # "high" | "medium" | "low"
     reasoning: str
     timestamp: str = ""
 
@@ -44,7 +45,7 @@ class HealedLocator:
 
 SYSTEM_PROMPT = """You are a Playwright locator expert for the 9MindTech QA framework.
 
-Your job: given a broken locator and the current page HTML snapshot, suggest 3 replacement 
+Your job: given a broken locator and the current page HTML snapshot, suggest 3 replacement
 locators ranked best to worst by reliability.
 
 Locator reliability ranking (prefer in this order):
@@ -86,7 +87,9 @@ def heal_locator(
     """
     client = get_client()
 
-    context = f"Element description: {element_description}\n" if element_description else ""
+    context = (
+        f"Element description: {element_description}\n" if element_description else ""
+    )
 
     prompt = f"""{context}Broken locator: {broken_locator}
 
@@ -153,15 +156,21 @@ def heal_and_apply(page, broken_locator: str, element_description: str = "") -> 
             count = page.locator(locator).count()
             if count == 1:
                 healer_log.info(f"APPLIED | {broken_locator!r} → {locator!r}")
-                print(f"[Self-Healer] Fixed: {broken_locator!r} → {locator!r} (confidence: {result.confidence})")
+                print(
+                    f"[Self-Healer] Fixed: {broken_locator!r} → {locator!r} (confidence: {result.confidence})"
+                )
                 return locator
             elif count > 1:
-                healer_log.warning(f"AMBIGUOUS | {locator!r} matched {count} elements, skipping")
+                healer_log.warning(
+                    f"AMBIGUOUS | {locator!r} matched {count} elements, skipping"
+                )
         except Exception as e:
             healer_log.warning(f"UNUSABLE | {locator!r} | error={e}")
 
     healer_log.error(f"NO_FIX | all suggestions failed for {broken_locator!r}")
-    print(f"[Self-Healer] Could not heal: {broken_locator!r} — check reports/healer.log")
+    print(
+        f"[Self-Healer] Could not heal: {broken_locator!r} — check reports/healer.log"
+    )
     return broken_locator
 
 
