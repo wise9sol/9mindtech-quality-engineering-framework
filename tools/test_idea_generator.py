@@ -3,17 +3,13 @@
 Powered by Claude AI - generates real test plans from feature descriptions.
 """
 
-import anthropic
 import textwrap
 import sys
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
+from ai.client import get_client, CLAUDE_MODEL
 
 
 def generate_test_ideas_with_ai(feature_description: str) -> str:
-    client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+    client = get_client()
 
     prompt = f"""You are a senior QA automation engineer at a professional quality engineering firm.
 
@@ -31,7 +27,7 @@ Generate a structured test plan with exactly these sections:
 Be specific, practical, and professional. Format clearly with bullet points."""
 
     message = client.messages.create(
-        model="claude-sonnet-4-5",
+        model=CLAUDE_MODEL,
         max_tokens=1000,
         messages=[{"role": "user", "content": prompt}],
     )

@@ -2,12 +2,14 @@ from pages.base_page import BasePage
 
 
 class LoginPage(BasePage):
+    """Page Object for the-internet.herokuapp.com/login."""
 
     username = "#username"
     password = "#password"
     login_button = "button[type='submit']"
 
-    def login(self, user, pwd):
+    def login(self, user: str, pwd: str) -> None:
+        """Fill credentials and submit the login form."""
         self.fill(self.username, user)
         self.fill(self.password, pwd)
         self.click(self.login_button)
