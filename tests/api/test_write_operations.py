@@ -2,6 +2,9 @@ import time
 
 import pytest
 import requests
+from jsonschema import validate
+
+from utils.schemas.post import POST_CREATED
 
 
 @pytest.mark.api
@@ -16,6 +19,7 @@ def test_post_returns_201_on_valid_payload(api_base_url: str) -> None:
 
     assert response.status_code == 201
     assert elapsed_ms < 2000
+    validate(instance=response.json(), schema=POST_CREATED)
 
 
 @pytest.mark.api
@@ -30,4 +34,4 @@ def test_post_returns_201_on_second_valid_payload(api_base_url: str) -> None:
 
     assert response.status_code == 201
     assert elapsed_ms < 2000
-    assert "id" in response.json()
+    validate(instance=response.json(), schema=POST_CREATED)
