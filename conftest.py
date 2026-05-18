@@ -13,6 +13,15 @@ from pages.login_page import LoginPage
 load_dotenv()
 
 
+def pytest_addoption(parser: pytest.Parser) -> None:
+    parser.addoption(
+        "--save-traces",
+        action="store_true",
+        default=False,
+        help="Save Playwright traces to artifacts/ on test failure.",
+    )
+
+
 def pytest_configure(config: pytest.Config) -> None:
     config.pluginmanager.register(SelfHealingPlugin(), "self_healing")
 
@@ -64,23 +73,26 @@ def login_page(page: Page, base_url: str) -> LoginPage:
 
 @pytest.fixture(scope="function")
 def context(browser, worker_id, request):
-    """Playwright browser context with tracing. Trace ZIP saved to artifacts/ on failure only."""
-    artifacts_dir = Path("artifacts")
-    artifacts_dir.mkdir(exist_ok=True)
+    """Playwright browser context. Pass --save-traces to capture traces on failure."""
+    save_traces = request.config.getoption("--save-traces", default=False)
 
     ctx = browser.new_context(
         ignore_https_errors=True,
         viewport={"width": 1440, "height": 900},
     )
-    ctx.tracing.start(screenshots=True, snapshots=True, sources=True)
+    if save_traces:
+        ctx.tracing.start(screenshots=True, snapshots=True, sources=True)
     yield ctx
 
-    rep = getattr(request.node, "rep_call", None)
-    if rep is not None and rep.failed:
-        trace_path = artifacts_dir / f"trace_{worker_id}_{_timestamp()}.zip"
-        ctx.tracing.stop(path=str(trace_path))
-    else:
-        ctx.tracing.stop()
+    if save_traces:
+        rep = getattr(request.node, "rep_call", None)
+        if rep is not None and rep.failed:
+            artifacts_dir = Path("artifacts")
+            artifacts_dir.mkdir(exist_ok=True)
+            trace_path = artifacts_dir / f"trace_{worker_id}_{_timestamp()}.zip"
+            ctx.tracing.stop(path=str(trace_path))
+        else:
+            ctx.tracing.stop()
     ctx.close()
 
 

@@ -8,7 +8,7 @@ Quick reference:
     from ai.failure_analyst import run_analysis
 """
 
-from ai.client import get_client, CLAUDE_MODEL, TOKENS
+from ai.client import get_client, CLAUDE_MODEL, TOKENS, extract_text
 from ai.test_generator import (
     generate_ui_tests,
     generate_api_tests,
@@ -21,6 +21,7 @@ __all__ = [
     "get_client",
     "CLAUDE_MODEL",
     "TOKENS",
+    "extract_text",
     "generate_ui_tests",
     "generate_api_tests",
     "save_generated_tests",
