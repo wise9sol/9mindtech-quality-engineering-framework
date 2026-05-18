@@ -78,15 +78,18 @@ This repo is worked on by multiple AI tools. To prevent conflicting suggestions:
 │   └── network/               ← Network condition tests (excluded from CI)
 │
 ├── utils/
-│   ├── api_client.py
-│   ├── data_factory.py
-│   └── helpers.py
+│   ├── config.py              ← BASE_URL and env config
+│   ├── logger.py              ← Shared logger instance
+│   ├── network_config.py      ← Network test constants (BASE_URL, credentials)
+│   ├── artifacts.py           ← Artifact path helpers for screenshots/traces
+│   └── schemas/               ← jsonschema definitions for API response validation
+│       └── post.py
 │
-├── fixtures/
-│   └── conftest.py            ← All shared fixtures here, NEVER in test files
+├── conftest.py                ← All shared fixtures and hooks here, NEVER in test files
 │
 └── reports/                   ← Auto-generated — never commit this folder
     ├── allure-results/
+    ├── ai_analysis/
     └── report.html
 ```
 
