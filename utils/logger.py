@@ -1,3 +1,5 @@
+"""Shared logger instance for the 9MindTech framework. Writes to logs/test.log and stdout."""
+
 import logging
 import os
 

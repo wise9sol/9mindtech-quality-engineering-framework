@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/playwright/python:v1.58.0-noble
+FROM mcr.microsoft.com/playwright/python:v1.51.0-noble
 
 WORKDIR /app
 
@@ -9,4 +9,4 @@ RUN pip install --upgrade pip && \
 
 COPY . .
 
-CMD ["python", "-m", "pytest"]
+CMD ["python", "-m", "pytest", "-m", "smoke or api or regression", "--tb=short"]

@@ -1,6 +1,6 @@
 pytest==8.3.5
-flake8
-black
+flake8==7.3.0
+black==26.5.1
 playwright==1.51.0
 pytest-playwright==0.7.2
 requests==2.32.3
@@ -9,4 +9,4 @@ pytest-xdist==3.6.1
 python-dotenv==1.0.1
 allure-pytest==2.13.5
 anthropic==0.49.0
-jsonschema
+jsonschema==4.26.0

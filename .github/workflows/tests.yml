@@ -13,7 +13,7 @@ jobs:
         with:
           python-version: "3.13"
       - name: Install lint tools
-        run: pip install flake8 black
+        run: pip install flake8==7.3.0 black==26.5.1
       - name: flake8
         run: flake8 . --exclude=.venv,reports,website --max-line-length=120
       - name: black
@@ -33,7 +33,7 @@ jobs:
           playwright install chromium
           playwright install-deps chromium
       - name: Run smoke tests
-        run: python -m pytest -m smoke --tb=short
+        run: python -m pytest -m smoke --tb=short --html=reports/report.html --self-contained-html
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
       - name: Upload smoke reports
@@ -58,7 +58,7 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
       - name: Run API tests
-        run: python -m pytest -m api --tb=short
+        run: python -m pytest -m api --tb=short --html=reports/report.html --self-contained-html
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
       - name: Upload API reports
@@ -86,7 +86,7 @@ jobs:
           playwright install chromium
           playwright install-deps chromium
       - name: Run regression suite
-        run: python -m pytest -m regression -n auto --tb=short
+        run: python -m pytest -m regression -n auto --tb=short --html=reports/report.html --self-contained-html
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
       - name: Upload regression reports
@@ -99,4 +99,5 @@ jobs:
             reports/allure-results/
             reports/ai_analysis/
             reports/screenshots/
+            artifacts/
           retention-days: 14
