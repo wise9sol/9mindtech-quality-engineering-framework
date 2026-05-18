@@ -8,7 +8,10 @@
       "Bash(git push *)",
       "Bash(.venv/Scripts/python.exe *)",
       "Bash(pytest --co -q tests/ui/test_login_generated.py)",
-      "PowerShell(python -c \"import ast; ast.parse\\(open\\('C:/Dev/9mindtech-quality-engineering-framework/ai/test_generator.py'\\).read\\(\\)\\); print\\('OK'\\)\")"
+      "PowerShell(python -c \"import ast; ast.parse\\(open\\('C:/Dev/9mindtech-quality-engineering-framework/ai/test_generator.py'\\).read\\(\\)\\); print\\('OK'\\)\")",
+      "WebFetch(domain:www.9mindtech.com)",
+      "Bash(npm run *)",
+      "Bash(pip install *)"
     ]
   }
 }
