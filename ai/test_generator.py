@@ -7,7 +7,7 @@ All generated tests get @pytest.mark.ai_generated and a docstring with the date.
 import re
 from datetime import date
 from pathlib import Path
-from ai.client import get_client, CLAUDE_MODEL, TOKENS
+from ai.client import get_client, CLAUDE_MODEL, TOKENS, extract_text
 
 
 def translate_natural_language_steps(
@@ -33,7 +33,7 @@ Example output: login_page.click_submit_button()"""
             max_tokens=100,
             messages=[{"role": "user", "content": prompt}],
         )
-        code = response.content[0].text.strip()
+        code = extract_text(response)
         code = code.replace("```python", "").replace("```", "").strip()
         results.append(code)
 
@@ -93,7 +93,7 @@ Today's date for docstrings: {today}
         messages=[{"role": "user", "content": prompt}],
     )
 
-    raw = response.content[0].text.strip()
+    raw = extract_text(response)
     return _clean_code_fences(raw)
 
 
@@ -133,7 +133,7 @@ Today's date for docstrings: {today}
         messages=[{"role": "user", "content": prompt}],
     )
 
-    raw = response.content[0].text.strip()
+    raw = extract_text(response)
     return _clean_code_fences(raw)
 
 

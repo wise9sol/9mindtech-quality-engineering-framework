@@ -13,8 +13,7 @@ def test_navigation_reaches_home_page(page: Page, base_url: str) -> None:
 @pytest.mark.ui
 @pytest.mark.regression
 def test_navigation_internal_link_loads_target_page(page: Page, base_url: str) -> None:
-    """Verify clicking a link navigates away from the home page."""
-    page.goto("https://example.com")
-    link = page.get_by_text("Learn more").first
-    link.click()
-    expect(page).to_have_url("https://www.iana.org/help/example-domains")
+    """Verify clicking a nav link on the home page loads the correct target page."""
+    page.goto(base_url)
+    page.get_by_role("link", name="Form Authentication").click()
+    expect(page).to_have_url(f"{base_url}/login")

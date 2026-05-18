@@ -10,7 +10,7 @@ import logging
 from datetime import datetime
 from pathlib import Path
 from dataclasses import dataclass
-from ai.client import get_client, CLAUDE_MODEL, TOKENS
+from ai.client import get_client, CLAUDE_MODEL, TOKENS, extract_text
 
 # ── Logging setup ──────────────────────────────────────────────────────────────
 LOG_PATH = Path("reports/healer.log")
@@ -108,7 +108,7 @@ Suggest 3 replacement locators."""
             messages=[{"role": "user", "content": prompt}],
         )
 
-        raw = response.content[0].text.strip()
+        raw = extract_text(response)
         data = json.loads(raw)
 
         result = HealedLocator(

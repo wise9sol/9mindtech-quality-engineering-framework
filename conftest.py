@@ -4,8 +4,11 @@ from datetime import datetime
 
 import pytest
 from dotenv import load_dotenv
+from playwright.sync_api import Page
+
 from ai.self_healer import SelfHealingPlugin
 from ai.failure_analyst import run_analysis
+from pages.login_page import LoginPage
 
 load_dotenv()
 
@@ -39,8 +42,29 @@ def api_base_url() -> str:
     return os.getenv("API_BASE_URL", "https://jsonplaceholder.typicode.com")
 
 
+@pytest.fixture
+def valid_credentials() -> dict[str, str]:
+    """Valid login credentials for the-internet.herokuapp.com."""
+    return {"username": "tomsmith", "password": "SuperSecretPassword!"}
+
+
+@pytest.fixture
+def invalid_credentials() -> dict[str, str]:
+    """Invalid login credentials for negative test cases."""
+    return {"username": "invalid_user", "password": "wrong_password"}
+
+
+@pytest.fixture
+def login_page(page: Page, base_url: str) -> LoginPage:
+    """Navigate to /login and return a LoginPage instance."""
+    login = LoginPage(page)
+    page.goto(f"{base_url}/login")
+    return login
+
+
 @pytest.fixture(scope="function")
-def context(browser, worker_id):
+def context(browser, worker_id, request):
+    """Playwright browser context with tracing. Trace ZIP saved to artifacts/ on failure only."""
     artifacts_dir = Path("artifacts")
     artifacts_dir.mkdir(exist_ok=True)
 
@@ -51,13 +75,18 @@ def context(browser, worker_id):
     ctx.tracing.start(screenshots=True, snapshots=True, sources=True)
     yield ctx
 
-    trace_path = artifacts_dir / f"trace_{worker_id}_{_timestamp()}.zip"
-    ctx.tracing.stop(path=str(trace_path))
+    rep = getattr(request.node, "rep_call", None)
+    if rep is not None and rep.failed:
+        trace_path = artifacts_dir / f"trace_{worker_id}_{_timestamp()}.zip"
+        ctx.tracing.stop(path=str(trace_path))
+    else:
+        ctx.tracing.stop()
     ctx.close()
 
 
 @pytest.fixture(scope="function")
-def page(context):
+def page(context) -> Page:
+    """Create a new Playwright page within the shared context."""
     p = context.new_page()
     yield p
     p.close()
@@ -67,26 +96,32 @@ def page(context):
 
 
 def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
-    if exitstatus not in (0, 5):  # 0 = all passed, 5 = no tests collected
+    if exitstatus == 1:  # 1 = tests failed; not interrupted (2) or internal error (3)
         try:
             run_analysis()
         except FileNotFoundError:
             pass  # Allure results not present — skip silently
 
 
-@pytest.hookimpl(hookwrapper=True)
+@pytest.hookimpl(wrapper=True)
 def pytest_runtest_makereport(item, call):
-    outcome = yield
-    report = outcome.get_result()
+    report = yield
 
-    if report.when == "call" and report.failed:
-        page = item.funcargs.get("page")
-        if page:
-            try:
-                screenshots_dir = Path("reports/screenshots")
-                screenshots_dir.mkdir(parents=True, exist_ok=True)
-                screenshot_path = screenshots_dir / f"{item.name}_{_timestamp()}.png"
-                page.screenshot(path=str(screenshot_path), timeout=5000)
-                print(f"\nScreenshot saved: {screenshot_path}")
-            except Exception as e:
-                print(f"\nScreenshot failed: {e}")
+    if report.when == "call":
+        item.rep_call = report
+
+        if report.failed:
+            page = item.funcargs.get("page")
+            if page:
+                try:
+                    screenshots_dir = Path("reports/screenshots")
+                    screenshots_dir.mkdir(parents=True, exist_ok=True)
+                    screenshot_path = (
+                        screenshots_dir / f"{item.name}_{_timestamp()}.png"
+                    )
+                    page.screenshot(path=str(screenshot_path), timeout=5000)
+                    print(f"\nScreenshot saved: {screenshot_path}")
+                except Exception as e:
+                    print(f"\nScreenshot failed: {e}")
+
+    return report

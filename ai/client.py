@@ -7,6 +7,7 @@ NEVER instantiate Anthropic() anywhere else in this codebase.
 import os
 import threading
 from anthropic import Anthropic
+from anthropic.types import Message, TextBlock
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -31,6 +32,15 @@ def get_client() -> Anthropic:
                     )
                 _client = Anthropic(api_key=api_key)
     return _client
+
+
+def extract_text(response: Message) -> str:
+    """Extract the text from the first content block of a Claude response."""
+    content = response.content[0]
+    assert isinstance(
+        content, TextBlock
+    ), f"Expected TextBlock, got {type(content).__name__}"
+    return content.text.strip()
 
 
 # Model — change only with team approval and CLAUDE.md update

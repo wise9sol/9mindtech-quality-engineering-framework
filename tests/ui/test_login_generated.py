@@ -1,27 +1,9 @@
 import re
 
 import pytest
-from playwright.sync_api import expect, Page
-from pages.login_page import LoginPage
+from playwright.sync_api import expect
 
 pytestmark = pytest.mark.ui
-
-
-@pytest.fixture
-def login_page(page: Page, base_url):
-    login = LoginPage(page)
-    page.goto(f"{base_url}/login")
-    return login
-
-
-@pytest.fixture
-def valid_credentials():
-    return {"username": "tomsmith", "password": "SuperSecretPassword!"}
-
-
-@pytest.fixture
-def invalid_credentials():
-    return {"username": "invalid_user", "password": "wrong_password"}
 
 
 class TestLoginHappyPath:

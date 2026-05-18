@@ -13,11 +13,13 @@ jobs:
         with:
           python-version: "3.13"
       - name: Install lint tools
-        run: pip install flake8==7.3.0 black==26.5.1
+        run: pip install flake8==7.3.0 black==26.5.1 mypy==2.1.0 anthropic==0.49.0
       - name: flake8
         run: flake8 . --exclude=.venv,reports,website --max-line-length=120
       - name: black
         run: black --check . --exclude ".venv|reports|website"
+      - name: mypy
+        run: mypy ai/ pages/ utils/ --ignore-missing-imports --explicit-package-bases
 
   smoke:
     needs: lint

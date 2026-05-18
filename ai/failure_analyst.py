@@ -8,7 +8,7 @@ import json
 from datetime import datetime
 from pathlib import Path
 from dataclasses import dataclass, field
-from ai.client import get_client, CLAUDE_MODEL, TOKENS
+from ai.client import get_client, CLAUDE_MODEL, TOKENS, extract_text
 
 OUTPUT_DIR = Path("reports/ai_analysis")
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -161,7 +161,7 @@ Provide root cause analysis following the required format.
         messages=[{"role": "user", "content": prompt}],
     )
 
-    analysis = response.content[0].text.strip()
+    analysis = extract_text(response)
     report = FailureReport(
         total_tests=total,
         failed_count=len(failed_tests),
@@ -196,7 +196,7 @@ Run: {report.failed_count} failed / {report.total_tests} total
         content += f"| {i} | `{t.name}` | {t.status} | {error_short} |\n"
 
     filename.write_text(content, encoding="utf-8")
-    print(f"[Failure Analyst] Report saved → {filename}")
+    print(f"[Failure Analyst] Report saved -> {filename}")
     return str(filename)
 
 
