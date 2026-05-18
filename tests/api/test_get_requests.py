@@ -18,6 +18,10 @@ def test_get_returns_200_for_health_endpoint(api_base_url: str) -> None:
 @pytest.mark.api
 @pytest.mark.regression
 def test_get_returns_correct_content_type(api_base_url: str) -> None:
-    """Verify GET responses include an application/json content-type header."""
+    """Verify GET responses include an application/json content-type header within acceptable time."""
+    start = time.time()
     response = requests.get(f"{api_base_url}/posts/1")
+    elapsed_ms = (time.time() - start) * 1000
+
     assert "application/json" in response.headers.get("Content-Type", "")
+    assert elapsed_ms < 2000
