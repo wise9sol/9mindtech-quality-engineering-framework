@@ -4,8 +4,13 @@ from datetime import datetime
 
 import pytest
 from dotenv import load_dotenv
+from ai.self_healer import SelfHealingPlugin
 
 load_dotenv()
+
+
+def pytest_configure(config: pytest.Config) -> None:
+    config.pluginmanager.register(SelfHealingPlugin(), "self_healing")
 
 
 def _timestamp() -> str:
