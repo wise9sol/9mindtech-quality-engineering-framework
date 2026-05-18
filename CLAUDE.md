@@ -146,7 +146,7 @@ class LoginPage(BasePage):
 
 ## 🤖 AI Module Rules (`ai/`)
 
-- Claude model: **claude-sonnet-4-20250514** only — never change without approval
+- Claude model: **claude-sonnet-4-6** only — never change without approval
 - All Claude calls go through `ai/client.py` — never instantiate Anthropic() elsewhere
 - AI-generated tests get `@pytest.mark.ai_generated` and a docstring noting generation date
 - Self-healer logs every locator change to `reports/healer.log`
