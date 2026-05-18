@@ -5,6 +5,7 @@ from datetime import datetime
 import pytest
 from dotenv import load_dotenv
 from ai.self_healer import SelfHealingPlugin
+from ai.failure_analyst import run_analysis
 
 load_dotenv()
 
@@ -50,6 +51,14 @@ def page(context):
 
 
 # ── Hooks ──────────────────────────────────────────────────────────────────────
+
+def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
+    if exitstatus not in (0, 5):  # 0 = all passed, 5 = no tests collected
+        try:
+            run_analysis()
+        except FileNotFoundError:
+            pass  # Allure results not present — skip silently
+
 
 @pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_makereport(item, call):
