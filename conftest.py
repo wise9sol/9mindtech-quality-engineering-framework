@@ -14,11 +14,23 @@ def pytest_configure(config: pytest.Config) -> None:
     config.pluginmanager.register(SelfHealingPlugin(), "self_healing")
 
 
+@pytest.fixture(scope="session")
+def worker_id(request: pytest.FixtureRequest) -> str:
+    """Return xdist worker ID, or 'master' when running without parallelism."""
+    return getattr(request.config, "workerinput", {}).get("workerid", "master")
+
+
 def _timestamp() -> str:
     return datetime.now().strftime("%Y%m%d_%H%M%S")
 
 
 # ── Fixtures ───────────────────────────────────────────────────────────────────
+
+
+@pytest.fixture(scope="session")
+def base_url() -> str:
+    """Base URL for UI tests. Explicit override so xdist workers always get the value."""
+    return os.getenv("BASE_URL", "https://the-internet.herokuapp.com")
 
 
 @pytest.fixture(scope="session")
@@ -28,7 +40,7 @@ def api_base_url() -> str:
 
 
 @pytest.fixture(scope="function")
-def context(browser):
+def context(browser, worker_id):
     artifacts_dir = Path("artifacts")
     artifacts_dir.mkdir(exist_ok=True)
 
@@ -39,7 +51,7 @@ def context(browser):
     ctx.tracing.start(screenshots=True, snapshots=True, sources=True)
     yield ctx
 
-    trace_path = artifacts_dir / f"trace_{_timestamp()}.zip"
+    trace_path = artifacts_dir / f"trace_{worker_id}_{_timestamp()}.zip"
     ctx.tracing.stop(path=str(trace_path))
     ctx.close()
 
