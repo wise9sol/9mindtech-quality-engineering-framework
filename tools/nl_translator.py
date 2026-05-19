@@ -12,7 +12,9 @@ from pages.login_page import LoginPage  # noqa: E402, F401
 from pages.home_page import HomePage  # noqa: E402, F401
 
 
-def translate_step_to_code(step_text: str, available_methods: list[str]) -> Optional[str]:
+def translate_step_to_code(
+    step_text: str, available_methods: list[str]
+) -> Optional[str]:
     """Use Claude to convert a plain English test step into a page object method call."""
     client = get_client()
 

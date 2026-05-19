@@ -1,6 +1,11 @@
 import pytest
 from utils.config import BASE_URL
-from utils.network_config import LOGIN_PATH, VALID_USERNAME, VALID_PASSWORD, SUCCESS_PATH
+from utils.network_config import (
+    LOGIN_PATH,
+    VALID_USERNAME,
+    VALID_PASSWORD,
+    SUCCESS_PATH,
+)
 from utils.artifacts import artifact_path
 
 
