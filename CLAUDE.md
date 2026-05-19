@@ -46,6 +46,8 @@ This repo is worked on by multiple AI tools. To prevent conflicting suggestions:
 | Linting            | flake8             | 7.3.0         | Max line length 120                |
 | Formatting         | black              | 26.5.1        | Enforced in CI                     |
 | Type Checking      | mypy               | 2.1.0         | Checks `ai/ pages/ utils/` in CI   |
+| Security Scanning  | bandit             | 1.9.4         | `-ll` severity in CI lint job      |
+| Pre-commit Hooks   | pre-commit         | 4.6.0         | `.pre-commit-config.yaml` at root  |
 | CI/CD              | GitHub Actions     | ubuntu-latest | See `.github/workflows/tests.yml`  |
 | Containerization   | Docker             | 1.51.0 image  | Dockerfile at root                 |
 
@@ -83,12 +85,13 @@ This repo is worked on by multiple AI tools. To prevent conflicting suggestions:
 │   └── network/               ← Network condition tests (excluded from CI)
 │
 ├── tools/                     ← Developer CLI tools (not part of test suite)
+│   ├── nl_translator.py       ← NL-to-page-object demo (QualiOps seed)
 │   └── test_idea_generator.py
 │
 ├── utils/
 │   ├── config.py              ← BASE_URL and env config (single source of truth)
 │   ├── logger.py              ← Shared logger instance
-│   ├── network_config.py      ← Network test constants (re-exports BASE_URL from config)
+│   ├── network_config.py      ← Network test constants (import BASE_URL from utils.config)
 │   ├── artifacts.py           ← Timestamped artifact path helper
 │   └── schemas/               ← jsonschema definitions for API response validation
 │       └── post.py
@@ -176,12 +179,12 @@ class LoginPage(BasePage):
 
 ```yaml
 # Execution order — do not change
-1. Lint: flake8 + black --check + mypy (ai/ pages/ utils/)
-2. Smoke tests:      pytest -m smoke --tb=short --html=...
-3. API tests:        pytest -m api --tb=short --html=...
-4. Regression:       pytest -m regression -n auto --tb=short --html=... --save-traces
-                     (main branch only — traces saved to artifacts/ on failure)
-5. Network tests:    EXCLUDED from CI — run locally only
+1. Lint:          flake8 + black --check + mypy (ai/ pages/ utils/) + bandit -r ai/ pages/ utils/ -ll
+2. Smoke (UI):    pytest -m "smoke and ui" --tb=short  [Chromium]
+3. API tests:     pytest -m api --tb=short
+4. Cross-browser: pytest -m "smoke and ui" --browser {firefox,webkit} (matrix, parallel with smoke+api)
+5. Regression:    pytest -m regression -n auto --tb=short --save-traces  (main branch only)
+6. Network tests: EXCLUDED from CI — run locally only
 ```
 
 **`--save-traces`**: Enables Playwright tracing in the regression job. Pass it locally when debugging a flaky test. Without it, no trace overhead.

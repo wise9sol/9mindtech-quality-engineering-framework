@@ -1,6 +1,4 @@
-"""Network test constants. BASE_URL is the single source of truth from utils.config."""
-
-from utils.config import BASE_URL  # noqa: F401
+"""Network test constants. Import BASE_URL directly from utils.config."""
 
 LOGIN_PATH = "/login"
 VALID_USERNAME = "tomsmith"

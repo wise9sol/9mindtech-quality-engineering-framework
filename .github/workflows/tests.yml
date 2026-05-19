@@ -20,6 +20,8 @@ jobs:
         run: black --check . --exclude ".venv|reports|website"
       - name: mypy
         run: mypy ai/ pages/ utils/ --ignore-missing-imports --explicit-package-bases
+      - name: bandit
+        run: bandit -r ai/ pages/ utils/ -ll
 
   smoke:
     needs: lint
@@ -35,7 +37,7 @@ jobs:
           playwright install chromium
           playwright install-deps chromium
       - name: Run smoke tests
-        run: python -m pytest -m smoke --tb=short --html=reports/report.html --self-contained-html
+        run: python -m pytest -m "smoke and ui" --tb=short --html=reports/report.html --self-contained-html
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
       - name: Upload smoke reports
@@ -71,6 +73,36 @@ jobs:
           path: |
             reports/report.html
             reports/allure-results/
+          retention-days: 14
+
+  cross-browser:
+    needs: lint
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        browser: [firefox, webkit]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          playwright install ${{ matrix.browser }}
+          playwright install-deps ${{ matrix.browser }}
+      - name: Run smoke tests (${{ matrix.browser }})
+        run: python -m pytest -m "smoke and ui" --browser ${{ matrix.browser }} --tb=short --html=reports/report.html --self-contained-html
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      - name: Upload cross-browser reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cross-browser-${{ matrix.browser }}-reports
+          path: |
+            reports/report.html
+            reports/screenshots/
           retention-days: 14
 
   regression:
