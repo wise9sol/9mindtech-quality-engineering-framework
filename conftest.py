@@ -1,3 +1,5 @@
+"""Root conftest — all shared fixtures, hooks, and plugin registration for the 9MindTech framework."""
+
 import os
 from pathlib import Path
 from datetime import datetime

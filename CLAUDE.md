@@ -32,18 +32,22 @@ This repo is worked on by multiple AI tools. To prevent conflicting suggestions:
 
 ## ⚙️ Tech Stack — LOCKED
 
-| Layer              | Technology         | Version       | Notes                          |
-|--------------------|--------------------|---------------|--------------------------------|
-| Language           | Python             | 3.13          | No upgrade without team sign-off|
-| Test Runner        | pytest             | 8.3.5         | Config in `pytest.ini`         |
-| Browser Automation | Playwright         | 1.51.0        | Chromium primary, FF/WebKit CI |
-| HTTP / API Testing | requests           | 2.32.3        | No httpx unless justified      |
-| AI Integration     | Anthropic SDK      | 0.49.0        | Claude Sonnet only — see ai/   |
-| Parallel Execution | pytest-xdist       | latest        | `-n auto` in CI                |
-| Reporting          | Allure + pytest-html | latest      | Allure is primary for clients  |
-| Config             | python-dotenv      | latest        | All secrets via .env           |
-| CI/CD              | GitHub Actions     | ubuntu-latest | See .github/workflows/         |
-| Containerization   | Docker             | latest        | Dockerfile at root             |
+| Layer              | Technology         | Version       | Notes                              |
+|--------------------|--------------------|---------------|------------------------------------|
+| Language           | Python             | 3.13          | No upgrade without team sign-off   |
+| Test Runner        | pytest             | 8.3.5         | Config in `pytest.ini`             |
+| Browser Automation | Playwright         | 1.51.0        | Chromium primary, FF/WebKit CI     |
+| HTTP / API Testing | requests           | 2.32.3        | No httpx unless justified          |
+| AI Integration     | Anthropic SDK      | 0.49.0        | Claude Sonnet only — see `ai/`     |
+| Parallel Execution | pytest-xdist       | 3.6.1         | `-n auto` in CI regression job     |
+| Reporting          | Allure + pytest-html | 2.13.5 / 4.1.1 | Allure is primary for clients    |
+| Schema Validation  | jsonschema         | 4.26.0        | Schemas live in `utils/schemas/`   |
+| Config             | python-dotenv      | 1.0.1         | All secrets via `.env`             |
+| Linting            | flake8             | 7.3.0         | Max line length 120                |
+| Formatting         | black              | 26.5.1        | Enforced in CI                     |
+| Type Checking      | mypy               | 2.1.0         | Checks `ai/ pages/ utils/` in CI   |
+| CI/CD              | GitHub Actions     | ubuntu-latest | See `.github/workflows/tests.yml`  |
+| Containerization   | Docker             | 1.51.0 image  | Dockerfile at root                 |
 
 ---
 
@@ -56,40 +60,45 @@ This repo is worked on by multiple AI tools. To prevent conflicting suggestions:
 ├── pytest.ini
 ├── requirements.txt
 ├── Dockerfile
-├── .env.example
+├── .env.example               ← Copy to .env — never commit .env
 ├── .github/
 │   └── workflows/
-│       └── ci.yml
+│       └── tests.yml          ← lint → smoke+api → regression pipeline
 │
 ├── ai/                        ← AI Brain — Anthropic SDK lives here ONLY
-│   ├── __init__.py
-│   ├── client.py              ← Single Claude client instance
+│   ├── __init__.py            ← Public API for the ai/ package
+│   ├── client.py              ← Singleton Claude client + extract_text() helper
 │   ├── test_generator.py      ← Auto-generate test cases from specs
 │   ├── self_healer.py         ← Fix broken locators automatically
 │   └── failure_analyst.py     ← Root cause analysis from Allure JSON
 │
 ├── pages/                     ← Page Object Models
 │   ├── base_page.py
-│   └── [feature]_page.py
+│   ├── home_page.py
+│   └── login_page.py
 │
 ├── tests/
 │   ├── ui/                    ← Playwright UI tests
 │   ├── api/                   ← requests API tests
 │   └── network/               ← Network condition tests (excluded from CI)
 │
+├── tools/                     ← Developer CLI tools (not part of test suite)
+│   └── test_idea_generator.py
+│
 ├── utils/
-│   ├── config.py              ← BASE_URL and env config
+│   ├── config.py              ← BASE_URL and env config (single source of truth)
 │   ├── logger.py              ← Shared logger instance
-│   ├── network_config.py      ← Network test constants (BASE_URL, credentials)
-│   ├── artifacts.py           ← Artifact path helpers for screenshots/traces
+│   ├── network_config.py      ← Network test constants (re-exports BASE_URL from config)
+│   ├── artifacts.py           ← Timestamped artifact path helper
 │   └── schemas/               ← jsonschema definitions for API response validation
 │       └── post.py
 │
-├── conftest.py                ← All shared fixtures and hooks here, NEVER in test files
+├── conftest.py                ← ALL shared fixtures and hooks here, NEVER in test files
 │
 └── reports/                   ← Auto-generated — never commit this folder
     ├── allure-results/
     ├── ai_analysis/
+    ├── screenshots/
     └── report.html
 ```
 
@@ -99,6 +108,7 @@ This repo is worked on by multiple AI tools. To prevent conflicting suggestions:
 
 ### General
 - All code must pass `flake8` and be formatted with `black`
+- All code in `ai/ pages/ utils/` must pass `mypy --ignore-missing-imports`
 - Type hints required on all function signatures
 - Docstrings required on all public classes and methods
 - No hardcoded URLs, credentials, or env-specific values — use `.env`
@@ -108,13 +118,13 @@ This repo is worked on by multiple AI tools. To prevent conflicting suggestions:
 # Pattern: test_[action]_[expected_outcome]_[condition_if_needed]
 def test_login_succeeds_with_valid_credentials(): ...
 def test_login_fails_with_invalid_password(): ...
-def test_api_returns_400_when_payload_missing_required_field(): ...
+def test_api_returns_404_for_nonexistent_resource(): ...
 ```
 
 ### Pytest Markers — use these, no others without adding to pytest.ini
 ```python
 @pytest.mark.smoke        # Fast, critical path — always run in CI
-@pytest.mark.regression   # Full suite — run on release branches
+@pytest.mark.regression   # Full suite — run on main branch
 @pytest.mark.api          # API-only tests
 @pytest.mark.ui           # Browser tests
 @pytest.mark.network      # Network condition tests — EXCLUDED from CI
@@ -130,27 +140,31 @@ def test_api_returns_400_when_payload_missing_required_field(): ...
 ```python
 class LoginPage(BasePage):
     # Locators — top of class, always
-    EMAIL_INPUT = "[data-testid='email']"
-    PASSWORD_INPUT = "[data-testid='password']"
-    SUBMIT_BUTTON = "[data-testid='login-btn']"
+    username = "#username"
+    password = "#password"
+    login_button = "button[type='submit']"
 
-    def login(self, email: str, password: str) -> None:
-        self.page.fill(self.EMAIL_INPUT, email)
-        self.page.fill(self.PASSWORD_INPUT, password)
-        self.page.click(self.SUBMIT_BUTTON)
+    def login(self, user: str, pwd: str) -> None:
+        """Fill credentials and submit the login form."""
+        self.fill(self.username, user)
+        self.fill(self.password, pwd)
+        self.click(self.login_button)
 ```
 
 ### API Test Rules
-- Every API test must assert: status code, response schema, response time < 2000ms
-- Use `conftest.py` fixtures for base URLs and auth headers
-- Schema validation uses `jsonschema` — define schemas in `utils/schemas/`
+- Every API test must assert: status code, response time < 2000ms
+- Use `response.elapsed.total_seconds() * 1000` — never `time.time()`
+- Success responses must validate schema with `jsonschema.validate()`
+- Use `conftest.py` fixtures for base URLs — never hardcode
+- Schema definitions live in `utils/schemas/`
 
 ---
 
 ## 🤖 AI Module Rules (`ai/`)
 
 - Claude model: **claude-sonnet-4-6** only — never change without approval
-- All Claude calls go through `ai/client.py` — never instantiate Anthropic() elsewhere
+- All Claude calls go through `ai/client.py` — never instantiate `Anthropic()` elsewhere
+- Use `extract_text(response)` from `ai/client.py` to read response text — never access `response.content[0].text` directly (fails mypy)
 - AI-generated tests get `@pytest.mark.ai_generated` and a docstring noting generation date
 - Self-healer logs every locator change to `reports/healer.log`
 - Failure analyst output saved to `reports/ai_analysis/` — never printed only to console
@@ -162,12 +176,15 @@ class LoginPage(BasePage):
 
 ```yaml
 # Execution order — do not change
-1. Lint (flake8 + black --check)
-2. Smoke tests: pytest -m smoke --tb=short
-3. API tests: pytest -m api --tb=short
-4. Regression: pytest -m regression -n auto (only on main branch)
-5. Network tests: EXCLUDED from CI — run locally only
+1. Lint: flake8 + black --check + mypy (ai/ pages/ utils/)
+2. Smoke tests:      pytest -m smoke --tb=short --html=...
+3. API tests:        pytest -m api --tb=short --html=...
+4. Regression:       pytest -m regression -n auto --tb=short --html=... --save-traces
+                     (main branch only — traces saved to artifacts/ on failure)
+5. Network tests:    EXCLUDED from CI — run locally only
 ```
+
+**`--save-traces`**: Enables Playwright tracing in the regression job. Pass it locally when debugging a flaky test. Without it, no trace overhead.
 
 **Never add `time.sleep()` to fix flaky CI tests — fix the root cause.**
 **Never use `--ignore` to skip failing tests without opening a tracking issue.**
@@ -177,12 +194,12 @@ class LoginPage(BasePage):
 ## 🔐 Environment Variables
 
 ```bash
-# .env.example — copy to .env, never commit .env
-BASE_URL=https://your-app.com
-API_BASE_URL=https://api.your-app.com
+# Copy .env.example to .env — never commit .env
+ANTHROPIC_API_KEY=          # Required for ai/ module
+BASE_URL=https://the-internet.herokuapp.com
+API_BASE_URL=https://jsonplaceholder.typicode.com
 TEST_EMAIL=test@example.com
 TEST_PASSWORD=
-ANTHROPIC_API_KEY=          # Required for ai/ module
 ALLURE_RESULTS_DIR=reports/allure-results
 ```
 
@@ -192,23 +209,25 @@ ALLURE_RESULTS_DIR=reports/allure-results
 
 - Do NOT use `driver` — this is Playwright, not Selenium
 - Do NOT use `sleep()` — use Playwright `expect()` or `wait_for_*`
-- Do NOT put fixtures in test files — they go in `fixtures/conftest.py`
+- Do NOT put fixtures in test files — they go in `conftest.py`
 - Do NOT create a second Anthropic client — use `ai/client.py`
+- Do NOT access `response.content[0].text` directly — use `extract_text(response)`
 - Do NOT use `gpt-*` models — this framework uses Claude only
 - Do NOT add `xfail` markers without a linked issue number
 - Do NOT modify `reports/` — it is auto-generated
 - Do NOT commit `.env` — use `.env.example` as the template
+- Do NOT use `time.time()` for response timing — use `response.elapsed`
 
 ---
 
 ## ✅ Definition of Done (every PR)
 
-- [ ] Tests pass locally: `pytest -m smoke -m api`
-- [ ] No new flake8 warnings
+- [ ] Tests pass locally: `pytest -m "smoke or api"`
+- [ ] No new flake8 or mypy warnings
 - [ ] New tests follow naming conventions above
-- [ ] CLAUDE.md updated if stack/structure changed
+- [ ] CLAUDE.md updated if stack/structure/rules changed
 - [ ] Allure report reviewed before merge
 
 ---
 
-*Last updated: 2026 · Maintained by 9MindTech*
+*Last updated: 2026-05-18 · Maintained by 9MindTech*

@@ -27,6 +27,7 @@ class TestLoginHappyPath:
         expect(page).not_to_have_url(re.compile(r"login"))
 
     @pytest.mark.ai_generated
+    @pytest.mark.regression
     def test_login_button_clickable_with_filled_fields(
         self, login_page, valid_credentials, page
     ):
