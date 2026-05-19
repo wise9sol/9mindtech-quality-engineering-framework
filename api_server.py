@@ -14,7 +14,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 import subprocess
 
-from ai.client import get_client, CLAUDE_MODEL
+from ai.client import get_client, CLAUDE_MODEL, extract_text
 
 app = FastAPI(
     title="QualiOps AI Quality Engine",
@@ -65,7 +65,7 @@ def root():
 @app.post("/translate")
 def translate_steps(steps: list[TestStep]):
     """Preview: show what code the AI would generate. No execution."""
-    from test_nl_translator import translate_step_to_code
+    from tools.nl_translator import translate_step_to_code
 
     # Real method signatures from LoginPage / BasePage
     available_methods = [
@@ -296,8 +296,7 @@ RULES:
         messages=[{"role": "user", "content": prompt}],
     )
 
-    code = response.content[0].text.strip()
-    # Strip any accidental markdown fences
+    code = extract_text(response)
     code = code.replace("```python", "").replace("```", "").strip()
     return code
 
@@ -305,4 +304,4 @@ RULES:
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8000)  # nosec B104

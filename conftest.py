@@ -3,10 +3,11 @@
 import os
 from pathlib import Path
 from datetime import datetime
+from typing import Generator
 
 import pytest
 from dotenv import load_dotenv
-from playwright.sync_api import Page
+from playwright.sync_api import Browser, BrowserContext, Page
 
 from ai.self_healer import SelfHealingPlugin
 from ai.failure_analyst import run_analysis
@@ -74,7 +75,7 @@ def login_page(page: Page, base_url: str) -> LoginPage:
 
 
 @pytest.fixture(scope="function")
-def context(browser, worker_id, request):
+def context(browser: Browser, worker_id: str, request: pytest.FixtureRequest) -> Generator[BrowserContext, None, None]:
     """Playwright browser context. Pass --save-traces to capture traces on failure."""
     save_traces = request.config.getoption("--save-traces", default=False)
 
@@ -99,7 +100,7 @@ def context(browser, worker_id, request):
 
 
 @pytest.fixture(scope="function")
-def page(context) -> Page:
+def page(context: BrowserContext) -> Generator[Page, None, None]:
     """Create a new Playwright page within the shared context."""
     p = context.new_page()
     yield p
@@ -110,6 +111,7 @@ def page(context) -> Page:
 
 
 def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
+    """Trigger AI failure analysis when the test session ends with failures."""
     if exitstatus == 1:  # 1 = tests failed; not interrupted (2) or internal error (3)
         try:
             run_analysis()
@@ -118,24 +120,23 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
 
 
 @pytest.hookimpl(wrapper=True)
-def pytest_runtest_makereport(item, call):
+def pytest_runtest_makereport(item: pytest.Item, call: pytest.CallInfo[None]) -> Generator[None, None, None]:
+    """Save a screenshot on failure and stash the report on the item for trace teardown."""
     report = yield
 
     if report.when == "call":
-        item.rep_call = report
+        item.rep_call = report  # type: ignore[attr-defined]
 
         if report.failed:
-            page = item.funcargs.get("page")
+            page = item.funcargs.get("page")  # type: ignore[attr-defined]
             if page:
                 try:
                     screenshots_dir = Path("reports/screenshots")
                     screenshots_dir.mkdir(parents=True, exist_ok=True)
-                    screenshot_path = (
-                        screenshots_dir / f"{item.name}_{_timestamp()}.png"
-                    )
+                    screenshot_path = screenshots_dir / f"{item.name}_{_timestamp()}.png"
                     page.screenshot(path=str(screenshot_path), timeout=5000)
                     print(f"\nScreenshot saved: {screenshot_path}")
                 except Exception as e:
                     print(f"\nScreenshot failed: {e}")
 
-    return report
+    return report  # type: ignore[return-value]

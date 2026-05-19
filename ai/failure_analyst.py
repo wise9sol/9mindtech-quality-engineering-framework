@@ -140,9 +140,7 @@ Trace (excerpt): {test.stack_trace[:200]}
 """
 
     if len(failed_tests) > 20:
-        failures_text += (
-            f"\n... and {len(failed_tests) - 20} more failures (truncated for analysis)"
-        )
+        failures_text += f"\n... and {len(failed_tests) - 20} more failures (truncated for analysis)"
 
     prompt = f"""Analyze these test failures from the 9MindTech QA suite.
 

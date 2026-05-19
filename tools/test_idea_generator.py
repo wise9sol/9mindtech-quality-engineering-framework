@@ -5,10 +5,11 @@ Powered by Claude AI - generates real test plans from feature descriptions.
 
 import textwrap
 import sys
-from ai.client import get_client, CLAUDE_MODEL
+from ai.client import get_client, CLAUDE_MODEL, extract_text, TOKENS
 
 
 def generate_test_ideas_with_ai(feature_description: str) -> str:
+    """Call Claude to produce a structured test plan for the given feature description."""
     client = get_client()
 
     prompt = f"""You are a senior QA automation engineer at a professional quality engineering firm.
@@ -28,26 +29,26 @@ Be specific, practical, and professional. Format clearly with bullet points."""
 
     message = client.messages.create(
         model=CLAUDE_MODEL,
-        max_tokens=1000,
+        max_tokens=TOKENS["test_generation"],
         messages=[{"role": "user", "content": prompt}],
     )
 
-    return message.content[0].text
+    return extract_text(message)
 
 
-def fallback_test_ideas(feature_description: str) -> dict:
+def fallback_test_ideas(feature_description: str) -> dict[str, list[str]]:
+    """Return a minimal static test plan when the AI client is unavailable."""
     return {
         "positive_cases": [f"Verify {feature_description} works with valid inputs."],
-        "negative_cases": [
-            f"Verify {feature_description} fails gracefully with invalid inputs."
-        ],
+        "negative_cases": [f"Verify {feature_description} fails gracefully with invalid inputs."],
         "edge_cases": [f"Test boundary conditions for {feature_description}."],
         "api_checks": [f"Validate API responses for {feature_description}."],
         "ui_checks": [f"Verify UI behavior for {feature_description}."],
     }
 
 
-def print_test_plan(feature_description: str):
+def print_test_plan(feature_description: str) -> None:
+    """Generate and print an AI-assisted test plan to stdout."""
     print("\n" + "=" * 60)
     print("  9MindTech AI-Assisted Test Plan")
     print("  Powered by Claude AI")

@@ -10,9 +10,7 @@ from pathlib import Path
 from ai.client import get_client, CLAUDE_MODEL, TOKENS, extract_text
 
 
-def translate_natural_language_steps(
-    steps: list[str], page_objects: list[str]
-) -> list[str]:
+def translate_natural_language_steps(steps: list[str], page_objects: list[str]) -> list[str]:
     """Convert a list of plain English steps to executable code."""
     client = get_client()
     results = []

@@ -12,9 +12,7 @@ logger = logging.getLogger("9MindTechLogger")
 logger.setLevel(logging.INFO)
 
 if not logger.handlers:
-    formatter = logging.Formatter(
-        "%(asctime)s | %(levelname)s | %(name)s | %(message)s"
-    )
+    formatter = logging.Formatter("%(asctime)s | %(levelname)s | %(name)s | %(message)s")
 
     file_handler = logging.FileHandler(LOG_FILE)
     file_handler.setLevel(logging.INFO)

@@ -87,9 +87,7 @@ def heal_locator(
     """
     client = get_client()
 
-    context = (
-        f"Element description: {element_description}\n" if element_description else ""
-    )
+    context = f"Element description: {element_description}\n" if element_description else ""
 
     prompt = f"""{context}Broken locator: {broken_locator}
 
@@ -156,21 +154,15 @@ def heal_and_apply(page, broken_locator: str, element_description: str = "") -> 
             count = page.locator(locator).count()
             if count == 1:
                 healer_log.info(f"APPLIED | {broken_locator!r} → {locator!r}")
-                print(
-                    f"[Self-Healer] Fixed: {broken_locator!r} → {locator!r} (confidence: {result.confidence})"
-                )
+                print(f"[Self-Healer] Fixed: {broken_locator!r} → {locator!r} (confidence: {result.confidence})")
                 return locator
             elif count > 1:
-                healer_log.warning(
-                    f"AMBIGUOUS | {locator!r} matched {count} elements, skipping"
-                )
+                healer_log.warning(f"AMBIGUOUS | {locator!r} matched {count} elements, skipping")
         except Exception as e:
             healer_log.warning(f"UNUSABLE | {locator!r} | error={e}")
 
     healer_log.error(f"NO_FIX | all suggestions failed for {broken_locator!r}")
-    print(
-        f"[Self-Healer] Could not heal: {broken_locator!r} — check reports/healer.log"
-    )
+    print(f"[Self-Healer] Could not heal: {broken_locator!r} — check reports/healer.log")
     return broken_locator
 
 

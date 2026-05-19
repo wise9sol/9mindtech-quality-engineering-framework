@@ -27,9 +27,7 @@ def get_client() -> Anthropic:
             if _client is None:
                 api_key = os.getenv("ANTHROPIC_API_KEY")
                 if not api_key:
-                    raise EnvironmentError(
-                        "ANTHROPIC_API_KEY not set. Add it to your .env file."
-                    )
+                    raise EnvironmentError("ANTHROPIC_API_KEY not set. Add it to your .env file.")
                 _client = Anthropic(api_key=api_key)
     return _client
 
@@ -37,9 +35,7 @@ def get_client() -> Anthropic:
 def extract_text(response: Message) -> str:
     """Extract the text from the first content block of a Claude response."""
     content = response.content[0]
-    assert isinstance(
-        content, TextBlock
-    ), f"Expected TextBlock, got {type(content).__name__}"
+    assert isinstance(content, TextBlock), f"Expected TextBlock, got {type(content).__name__}"
     return content.text.strip()
 
 
