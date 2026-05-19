@@ -1,5 +1,8 @@
 import pytest
 import requests
+from jsonschema import validate
+
+from utils.schemas.post import POST_LIST
 
 
 @pytest.mark.api
@@ -12,3 +15,4 @@ def test_api_returns_exactly_100_posts(api_base_url: str) -> None:
     assert response.headers["Content-Type"].startswith("application/json")
     assert response.elapsed.total_seconds() * 1000 < 2000
     assert len(response.json()) == 100
+    validate(instance=response.json(), schema=POST_LIST)

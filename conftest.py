@@ -120,7 +120,9 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
 
 
 @pytest.hookimpl(wrapper=True)
-def pytest_runtest_makereport(item: pytest.Item, call: pytest.CallInfo[None]) -> Generator[None, None, None]:
+def pytest_runtest_makereport(
+    item: pytest.Item, call: pytest.CallInfo[None]
+) -> Generator[None, pytest.TestReport, pytest.TestReport]:
     """Save a screenshot on failure and stash the report on the item for trace teardown."""
     report = yield
 
@@ -139,4 +141,4 @@ def pytest_runtest_makereport(item: pytest.Item, call: pytest.CallInfo[None]) ->
                 except Exception as e:
                     print(f"\nScreenshot failed: {e}")
 
-    return report  # type: ignore[return-value]
+    return report

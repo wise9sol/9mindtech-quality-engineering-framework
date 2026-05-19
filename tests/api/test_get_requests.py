@@ -1,5 +1,8 @@
 import pytest
 import requests
+from jsonschema import validate
+
+from utils.schemas.post import POST
 
 
 @pytest.mark.api
@@ -10,6 +13,7 @@ def test_get_returns_200_for_health_endpoint(api_base_url: str) -> None:
 
     assert response.status_code == 200
     assert response.elapsed.total_seconds() * 1000 < 2000
+    validate(instance=response.json(), schema=POST)
 
 
 @pytest.mark.api
@@ -20,3 +24,4 @@ def test_get_returns_correct_content_type(api_base_url: str) -> None:
 
     assert "application/json" in response.headers.get("Content-Type", "")
     assert response.elapsed.total_seconds() * 1000 < 2000
+    validate(instance=response.json(), schema=POST)
