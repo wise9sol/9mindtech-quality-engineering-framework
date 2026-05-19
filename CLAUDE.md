@@ -47,6 +47,8 @@ This repo is worked on by multiple AI tools. To prevent conflicting suggestions:
 | Formatting         | black              | 26.5.1        | Enforced in CI                     |
 | Type Checking      | mypy               | 2.1.0         | Checks `ai/ pages/ utils/` in CI   |
 | Security Scanning  | bandit             | 1.9.4         | `-ll` severity in CI lint job      |
+| API Server         | FastAPI + Uvicorn  | 0.136.1 / 0.46.0 | QualiOps product API — `api_server.py` |
+| API Validation     | pydantic           | 2.13.1        | Request/response models in `api_server.py` |
 | Pre-commit Hooks   | pre-commit         | 4.6.0         | `.pre-commit-config.yaml` at root  |
 | CI/CD              | GitHub Actions     | ubuntu-latest | See `.github/workflows/tests.yml`  |
 | Containerization   | Docker             | 1.51.0 image  | Dockerfile at root                 |
