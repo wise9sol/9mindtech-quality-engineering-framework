@@ -56,6 +56,19 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           TEST_USERNAME: ${{ secrets.TEST_USERNAME || 'tomsmith' }}
           TEST_PASSWORD: ${{ secrets.TEST_PASSWORD || 'SuperSecretPassword!' }}
+      - name: Write Allure environment properties
+        if: always()
+        run: |
+          mkdir -p reports/allure-results
+          {
+            echo "Suite=Smoke (UI)"
+            echo "Browser=Chromium"
+            echo "Python=3.13"
+            echo "OS=Ubuntu (ubuntu-latest)"
+            echo "Branch=${{ github.ref_name }}"
+            echo "Commit=${{ github.sha }}"
+            echo "Base.URL=https://the-internet.herokuapp.com"
+          } > reports/allure-results/environment.properties
       - name: Generate Allure HTML report
         if: always()
         run: |
@@ -90,6 +103,19 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           TEST_USERNAME: ${{ secrets.TEST_USERNAME || 'tomsmith' }}
           TEST_PASSWORD: ${{ secrets.TEST_PASSWORD || 'SuperSecretPassword!' }}
+      - name: Write Allure environment properties
+        if: always()
+        run: |
+          mkdir -p reports/allure-results
+          {
+            echo "Suite=API"
+            echo "Browser=N/A"
+            echo "Python=3.13"
+            echo "OS=Ubuntu (ubuntu-latest)"
+            echo "Branch=${{ github.ref_name }}"
+            echo "Commit=${{ github.sha }}"
+            echo "API.Base.URL=https://jsonplaceholder.typicode.com"
+          } > reports/allure-results/environment.properties
       - name: Generate Allure HTML report
         if: always()
         run: |
@@ -129,6 +155,19 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           TEST_USERNAME: ${{ secrets.TEST_USERNAME || 'tomsmith' }}
           TEST_PASSWORD: ${{ secrets.TEST_PASSWORD || 'SuperSecretPassword!' }}
+      - name: Write Allure environment properties
+        if: always()
+        run: |
+          mkdir -p reports/allure-results
+          {
+            echo "Suite=Cross-Browser Smoke"
+            echo "Browser=${{ matrix.browser }}"
+            echo "Python=3.13"
+            echo "OS=Ubuntu (ubuntu-latest)"
+            echo "Branch=${{ github.ref_name }}"
+            echo "Commit=${{ github.sha }}"
+            echo "Base.URL=https://the-internet.herokuapp.com"
+          } > reports/allure-results/environment.properties
       - name: Generate Allure HTML report
         if: always()
         run: |
@@ -167,6 +206,21 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           TEST_USERNAME: ${{ secrets.TEST_USERNAME || 'tomsmith' }}
           TEST_PASSWORD: ${{ secrets.TEST_PASSWORD || 'SuperSecretPassword!' }}
+      - name: Write Allure environment properties
+        if: always()
+        run: |
+          mkdir -p reports/allure-results
+          {
+            echo "Suite=Regression"
+            echo "Browser=Chromium"
+            echo "Python=3.13"
+            echo "OS=Ubuntu (ubuntu-latest)"
+            echo "Parallel.Workers=auto"
+            echo "Branch=${{ github.ref_name }}"
+            echo "Commit=${{ github.sha }}"
+            echo "Base.URL=https://the-internet.herokuapp.com"
+            echo "API.Base.URL=https://jsonplaceholder.typicode.com"
+          } > reports/allure-results/environment.properties
       - name: Generate Allure HTML report
         if: always()
         run: |
