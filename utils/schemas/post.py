@@ -1,3 +1,4 @@
+# © 2026 Wise 9 Mind Solutions LLC. All rights reserved.
 """jsonschema definitions for the JSONPlaceholder /posts resource."""
 
 POST: dict[str, object] = {

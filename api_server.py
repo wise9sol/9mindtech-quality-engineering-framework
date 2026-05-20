@@ -1,3 +1,4 @@
+# © 2026 Wise 9 Mind Solutions LLC. All rights reserved.
 """
 QualiOps API Server - The product wrapper for your AI QA engine.
 Clients send natural language test specs, get back results.

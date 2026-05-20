@@ -1,3 +1,4 @@
+# © 2026 Wise 9 Mind Solutions LLC. All rights reserved.
 """
 9MindTech AI-Assisted Test Idea Generator
 Powered by Claude AI - generates real test plans from feature descriptions.

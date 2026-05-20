@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# © 2026 Wise 9 Mind Solutions LLC. All rights reserved.
 """Natural language to page object translation — seed of the QualiOps NL-to-code feature."""
 
 import sys

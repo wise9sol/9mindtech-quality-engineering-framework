@@ -1,3 +1,4 @@
+# © 2026 Wise 9 Mind Solutions LLC. All rights reserved.
 """Root conftest — all shared fixtures, hooks, and plugin registration for the 9MindTech framework."""
 
 import os
