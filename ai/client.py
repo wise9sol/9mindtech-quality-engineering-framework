@@ -1,3 +1,4 @@
+# © 2026 Wise 9 Mind Solutions LLC. All rights reserved.
 """
 ai/client.py — 9MindTech AI Brain
 Single Claude client instance for the entire framework.

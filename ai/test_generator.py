@@ -1,3 +1,4 @@
+# © 2026 Wise 9 Mind Solutions LLC. All rights reserved.
 """
 ai/test_generator.py — 9MindTech Test Generator
 Generates pytest test cases from Page Object classes or API endpoint specs.

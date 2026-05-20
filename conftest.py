@@ -1,3 +1,4 @@
+# © 2026 Wise 9 Mind Solutions LLC. All rights reserved.
 """Root conftest — all shared fixtures, hooks, and plugin registration for the 9MindTech framework."""
 
 import os
@@ -57,7 +58,10 @@ def api_base_url() -> str:
 @pytest.fixture
 def valid_credentials() -> dict[str, str]:
     """Valid login credentials for the-internet.herokuapp.com."""
-    return {"username": "tomsmith", "password": "SuperSecretPassword!"}
+    return {
+        "username": os.getenv("TEST_USERNAME", "tomsmith"),
+        "password": os.getenv("TEST_PASSWORD", "SuperSecretPassword!"),
+    }
 
 
 @pytest.fixture

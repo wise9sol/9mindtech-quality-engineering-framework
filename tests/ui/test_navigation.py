@@ -1,3 +1,4 @@
+# © 2026 Wise 9 Mind Solutions LLC. All rights reserved.
 import pytest
 from playwright.sync_api import Page, expect
 

@@ -1,3 +1,4 @@
+# © 2026 Wise 9 Mind Solutions LLC. All rights reserved.
 """
 ai/failure_analyst.py — 9MindTech Failure Analyst
 Reads Allure JSON results, identifies failing tests, and produces

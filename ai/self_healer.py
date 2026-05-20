@@ -1,3 +1,4 @@
+# © 2026 Wise 9 Mind Solutions LLC. All rights reserved.
 """
 ai/self_healer.py — 9MindTech Self-Healing Locator Agent
 When a Playwright locator fails, this agent analyzes the page HTML

@@ -1,3 +1,4 @@
+# © 2026 Wise 9 Mind Solutions LLC. All rights reserved.
 import pytest
 from utils.config import BASE_URL
 from utils.network_config import (

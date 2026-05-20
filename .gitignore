@@ -16,12 +16,58 @@ ENV/
 .env.bak
 
 # ── Environment / secrets ──────────────────────────────────────────────────────
+# .env files — all variants
 .env
-.env.local
-.env.*.local
+.env.*
+!.env.example
+*.env
+
+# Private keys and certificates
 *.key
 *.pem
 *.p12
+*.pfx
+*.jks
+*.keystore
+*_rsa
+*_dsa
+*_ecdsa
+*_ed25519
+*.pub.key
+
+# Secret / credential files
+*.secret
+*.secrets
+secrets.yaml
+secrets.yml
+secrets.json
+credentials.json
+credentials.yaml
+credentials.yml
+token.json
+*.token
+auth.json
+
+# Cloud provider credentials
+serviceaccount*.json
+service_account*.json
+gcloud*.json
+google-credentials*.json
+firebase*.json
+aws-credentials
+.aws/credentials
+
+# API key files
+api_keys.json
+api_keys.yaml
+api_keys.yml
+apikeys.json
+*_api_key.txt
+*_api_key.json
+
+# Secrets directories
+secrets/
+.secrets/
 
 # ── FastAPI / Uvicorn ─────────────────────────────────────────────────────────
 *.pid

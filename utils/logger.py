@@ -1,3 +1,4 @@
+# © 2026 Wise 9 Mind Solutions LLC. All rights reserved.
 """Shared logger instance for the 9MindTech framework. Writes to logs/test.log and stdout."""
 
 import logging
