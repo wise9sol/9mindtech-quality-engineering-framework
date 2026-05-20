@@ -33,6 +33,9 @@ GENERATED_DIR.mkdir(parents=True, exist_ok=True)
 # In-memory run store — replace with Redis/DB for production
 run_status: dict = {}
 
+_VALID_USERNAME = os.getenv("TEST_USERNAME", "tomsmith")
+_VALID_PASSWORD = os.getenv("TEST_PASSWORD", "SuperSecretPassword!")
+
 
 class TestRunRequest(BaseModel):
     """Payload a client sends to start a test run."""
@@ -71,7 +74,7 @@ def translate_steps(steps: list[TestStep]):
     # Real method signatures from LoginPage / BasePage
     available_methods = [
         "login_page.navigate('https://the-internet.herokuapp.com/login')",
-        "login_page.login('tomsmith', 'SuperSecretPassword!')",
+        f"login_page.login('{_VALID_USERNAME}', '{_VALID_PASSWORD}')",
         "login_page.fill(login_page.username, 'value')",
         "login_page.fill(login_page.password, 'value')",
         "login_page.click(login_page.login_button)",
@@ -231,8 +234,8 @@ Requirement: {spec}
 
 APPLICATION UNDER TEST:
 - Login page URL : https://the-internet.herokuapp.com/login
-- Valid username  : tomsmith
-- Valid password  : SuperSecretPassword!
+- Valid username  : {_VALID_USERNAME}
+- Valid password  : {_VALID_PASSWORD}
 - Success indicator: page.url contains "/secure" after login
 
 EXACT CLASS SIGNATURES — do not deviate from these:
@@ -268,13 +271,13 @@ CORRECT usage — option A (use the combined login method):
         \"\"\"AI-generated on 2026-05-12.\"\"\"
         login_page = LoginPage(page)
         login_page.navigate("https://the-internet.herokuapp.com/login")
-        login_page.login("tomsmith", "SuperSecretPassword!")
+        login_page.login("{_VALID_USERNAME}", "{_VALID_PASSWORD}")
         assert "/secure" in page.url
 
 CORRECT usage — option B (fill fields individually using the locator attributes):
     login_page.navigate("https://the-internet.herokuapp.com/login")
-    login_page.fill(login_page.username, "tomsmith")
-    login_page.fill(login_page.password, "SuperSecretPassword!")
+    login_page.fill(login_page.username, "{_VALID_USERNAME}")
+    login_page.fill(login_page.password, "{_VALID_PASSWORD}")
     login_page.click(login_page.login_button)
     assert "/secure" in page.url
 
