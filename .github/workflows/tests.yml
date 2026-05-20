@@ -45,6 +45,13 @@ jobs:
         run: python -m pytest -m "smoke and ui" --tb=short --html=reports/report.html --self-contained-html
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          TEST_USERNAME: ${{ secrets.TEST_USERNAME || 'tomsmith' }}
+          TEST_PASSWORD: ${{ secrets.TEST_PASSWORD || 'SuperSecretPassword!' }}
+      - name: Generate Allure HTML report
+        if: always()
+        run: |
+          npm install -g allure-commandline --save-dev
+          allure generate reports/allure-results --clean -o reports/allure-report
       - name: Upload smoke reports
         if: always()
         uses: actions/upload-artifact@v4
@@ -53,6 +60,7 @@ jobs:
           path: |
             reports/report.html
             reports/allure-results/
+            reports/allure-report/
             reports/screenshots/
           retention-days: 14
 
@@ -71,6 +79,13 @@ jobs:
         run: python -m pytest -m api --tb=short --html=reports/report.html --self-contained-html
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          TEST_USERNAME: ${{ secrets.TEST_USERNAME || 'tomsmith' }}
+          TEST_PASSWORD: ${{ secrets.TEST_PASSWORD || 'SuperSecretPassword!' }}
+      - name: Generate Allure HTML report
+        if: always()
+        run: |
+          npm install -g allure-commandline --save-dev
+          allure generate reports/allure-results --clean -o reports/allure-report
       - name: Upload API reports
         if: always()
         uses: actions/upload-artifact@v4
@@ -79,6 +94,7 @@ jobs:
           path: |
             reports/report.html
             reports/allure-results/
+            reports/allure-report/
           retention-days: 14
 
   cross-browser:
@@ -102,6 +118,13 @@ jobs:
         run: python -m pytest -m "smoke and ui" --browser ${{ matrix.browser }} --tb=short --html=reports/report.html --self-contained-html
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          TEST_USERNAME: ${{ secrets.TEST_USERNAME || 'tomsmith' }}
+          TEST_PASSWORD: ${{ secrets.TEST_PASSWORD || 'SuperSecretPassword!' }}
+      - name: Generate Allure HTML report
+        if: always()
+        run: |
+          npm install -g allure-commandline --save-dev
+          allure generate reports/allure-results --clean -o reports/allure-report
       - name: Upload cross-browser reports
         if: always()
         uses: actions/upload-artifact@v4
@@ -109,6 +132,8 @@ jobs:
           name: cross-browser-${{ matrix.browser }}-reports
           path: |
             reports/report.html
+            reports/allure-results/
+            reports/allure-report/
             reports/screenshots/
           retention-days: 14
 
@@ -131,6 +156,13 @@ jobs:
         run: python -m pytest -m regression -n auto --tb=short --html=reports/report.html --self-contained-html --save-traces
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          TEST_USERNAME: ${{ secrets.TEST_USERNAME || 'tomsmith' }}
+          TEST_PASSWORD: ${{ secrets.TEST_PASSWORD || 'SuperSecretPassword!' }}
+      - name: Generate Allure HTML report
+        if: always()
+        run: |
+          npm install -g allure-commandline --save-dev
+          allure generate reports/allure-results --clean -o reports/allure-report
       - name: Upload regression reports
         if: always()
         uses: actions/upload-artifact@v4
@@ -139,7 +171,8 @@ jobs:
           path: |
             reports/report.html
             reports/allure-results/
+            reports/allure-report/
             reports/ai_analysis/
             reports/screenshots/
             artifacts/
-          retention-days: 14
+          retention-days: 30
