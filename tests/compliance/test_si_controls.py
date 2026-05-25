@@ -24,13 +24,12 @@ API_BASE = os.getenv("API_BASE_URL", "https://jsonplaceholder.typicode.com")
 def test_si2_server_header_does_not_expose_version() -> None:
     with allure.step("Send GET request and inspect response headers"):
         response = requests.get(f"{API_BASE}/posts/1", timeout=10)
-        assert response.status_code == 200, (
-            f"SI-2 FAIL: expected 200, got {response.status_code}"
-        )
+        assert response.status_code == 200, f"SI-2 FAIL: expected 200, got {response.status_code}"
 
     with allure.step("Assert Server header does not contain a version string"):
         server = response.headers.get("Server", "")
         import re
+
         version_pattern = re.compile(r"\d+\.\d+")
         if version_pattern.search(server):
             allure.attach(
@@ -38,9 +37,9 @@ def test_si2_server_header_does_not_expose_version() -> None:
                 name="SI-2 Version Disclosure",
                 attachment_type=allure.attachment_type.TEXT,
             )
-        assert not version_pattern.search(server), (
-            f"SI-2 FAIL: Server header must not disclose a version, found '{server}'"
-        )
+        assert not version_pattern.search(
+            server
+        ), f"SI-2 FAIL: Server header must not disclose a version, found '{server}'"
 
 
 @allure.epic("NIST 800-53 Compliance")
@@ -54,9 +53,7 @@ def test_si2_server_header_does_not_expose_version() -> None:
 def test_si2_404_does_not_leak_stack_traces() -> None:
     with allure.step("Request a non-existent endpoint"):
         response = requests.get(f"{API_BASE}/posts/99999", timeout=10)
-        assert response.status_code == 404, (
-            f"SI-2 FAIL: expected 404, got {response.status_code}"
-        )
+        assert response.status_code == 404, f"SI-2 FAIL: expected 404, got {response.status_code}"
 
     with allure.step("Assert response body contains no stack trace indicators"):
         body = response.text.lower()
@@ -68,9 +65,7 @@ def test_si2_404_does_not_leak_stack_traces() -> None:
                     name="SI-2 Stack Trace Leak",
                     attachment_type=allure.attachment_type.TEXT,
                 )
-            assert indicator not in body, (
-                f"SI-2 FAIL: 404 response must not contain '{indicator}'"
-            )
+            assert indicator not in body, f"SI-2 FAIL: 404 response must not contain '{indicator}'"
 
 
 @allure.epic("NIST 800-53 Compliance")
@@ -84,9 +79,7 @@ def test_si2_404_does_not_leak_stack_traces() -> None:
 def test_si2_response_includes_content_type_header() -> None:
     with allure.step("Send GET request"):
         response = requests.get(f"{API_BASE}/posts/1", timeout=10)
-        assert response.status_code == 200, (
-            f"SI-2 FAIL: expected 200, got {response.status_code}"
-        )
+        assert response.status_code == 200, f"SI-2 FAIL: expected 200, got {response.status_code}"
 
     with allure.step("Assert Content-Type header is present and specifies JSON"):
         content_type = response.headers.get("Content-Type", "")
@@ -97,9 +90,9 @@ def test_si2_response_includes_content_type_header() -> None:
                 attachment_type=allure.attachment_type.TEXT,
             )
         assert content_type, "SI-2 FAIL: Content-Type header must be present"
-        assert "application/json" in content_type, (
-            f"SI-2 FAIL: Content-Type must specify application/json, got '{content_type}'"
-        )
+        assert (
+            "application/json" in content_type
+        ), f"SI-2 FAIL: Content-Type must specify application/json, got '{content_type}'"
 
 
 # ── SI-10: Information Input Validation ───────────────────────────────────────
@@ -158,16 +151,13 @@ def test_si10_api_handles_malicious_input_safely(label: str, payload: dict) -> N
                 attachment_type=allure.attachment_type.TEXT,
             )
         assert response.status_code < 500, (
-            f"SI-10 FAIL: malicious input '{label}' must not cause a 5xx error, "
-            f"got {response.status_code}"
+            f"SI-10 FAIL: malicious input '{label}' must not cause a 5xx error, " f"got {response.status_code}"
         )
 
     with allure.step("Assert response body does not contain a stack trace"):
         body_lower = response.text.lower()
         for indicator in ("traceback", "exception", "stack trace"):
-            assert indicator not in body_lower, (
-                f"SI-10 FAIL: response for '{label}' must not leak '{indicator}'"
-            )
+            assert indicator not in body_lower, f"SI-10 FAIL: response for '{label}' must not leak '{indicator}'"
 
 
 # ── SI-12: Information Management and Retention ───────────────────────────────
@@ -193,8 +183,7 @@ def test_si12_delete_returns_appropriate_status() -> None:
                 attachment_type=allure.attachment_type.TEXT,
             )
         assert 200 <= response.status_code < 300, (
-            f"SI-12 FAIL: delete must return 2xx to confirm retention action, "
-            f"got {response.status_code}"
+            f"SI-12 FAIL: delete must return 2xx to confirm retention action, " f"got {response.status_code}"
         )
 
 
@@ -209,9 +198,7 @@ def test_si12_delete_returns_appropriate_status() -> None:
 def test_si12_response_does_not_include_unexpected_sensitive_fields() -> None:
     with allure.step("Fetch a single record"):
         response = requests.get(f"{API_BASE}/posts/1", timeout=10)
-        assert response.status_code == 200, (
-            f"SI-12 FAIL: expected 200, got {response.status_code}"
-        )
+        assert response.status_code == 200, f"SI-12 FAIL: expected 200, got {response.status_code}"
 
     with allure.step("Assert no unexpected internal fields are present"):
         body = response.json()
@@ -223,9 +210,7 @@ def test_si12_response_does_not_include_unexpected_sensitive_fields() -> None:
                 name="SI-12 Unexpected Fields",
                 attachment_type=allure.attachment_type.TEXT,
             )
-        assert not exposed, (
-            f"SI-12 FAIL: response must not expose internal fields, found {exposed}"
-        )
+        assert not exposed, f"SI-12 FAIL: response must not expose internal fields, found {exposed}"
 
 
 @allure.epic("NIST 800-53 Compliance")
@@ -239,13 +224,9 @@ def test_si12_response_does_not_include_unexpected_sensitive_fields() -> None:
 def test_si12_record_list_is_bounded() -> None:
     with allure.step("Fetch the full post list"):
         response = requests.get(f"{API_BASE}/posts", timeout=10)
-        assert response.status_code == 200, (
-            f"SI-12 FAIL: expected 200, got {response.status_code}"
-        )
+        assert response.status_code == 200, f"SI-12 FAIL: expected 200, got {response.status_code}"
 
     with allure.step("Assert the list contains a finite, positive number of records"):
         records = response.json()
         assert len(records) > 0, "SI-12 FAIL: record list must not be empty"
-        assert len(records) <= 10000, (
-            f"SI-12 FAIL: record list must be bounded, returned {len(records)} records"
-        )
+        assert len(records) <= 10000, f"SI-12 FAIL: record list must be bounded, returned {len(records)} records"

@@ -34,9 +34,9 @@ def test_sc8_api_base_url_uses_https() -> None:
                 name="SC-8 Insecure Transmission URL",
                 attachment_type=allure.attachment_type.TEXT,
             )
-        assert url.startswith("https://"), (
-            f"SC-8 FAIL: API_BASE_URL must use HTTPS to protect transmission, got '{url}'"
-        )
+        assert url.startswith(
+            "https://"
+        ), f"SC-8 FAIL: API_BASE_URL must use HTTPS to protect transmission, got '{url}'"
 
 
 @allure.epic("NIST 800-53 Compliance")
@@ -60,9 +60,7 @@ def test_sc8_tls_handshake_succeeds_with_strict_verification() -> None:
             pytest.fail(f"SC-8 FAIL: TLS handshake failed with strict verification — {exc}")
 
     with allure.step("Assert 200 response over verified TLS"):
-        assert response.status_code == 200, (
-            f"SC-8 FAIL: HTTPS request must return 200, got {response.status_code}"
-        )
+        assert response.status_code == 200, f"SC-8 FAIL: HTTPS request must return 200, got {response.status_code}"
 
 
 @allure.epic("NIST 800-53 Compliance")
@@ -85,9 +83,9 @@ def test_sc8_effective_url_remains_https_after_any_redirects() -> None:
                 name="SC-8 Redirect to HTTP",
                 attachment_type=allure.attachment_type.TEXT,
             )
-        assert effective_url.startswith("https://"), (
-            f"SC-8 FAIL: effective URL must use HTTPS after redirects, got '{effective_url}'"
-        )
+        assert effective_url.startswith(
+            "https://"
+        ), f"SC-8 FAIL: effective URL must use HTTPS after redirects, got '{effective_url}'"
 
 
 # ── SC-28: Protection of Information at Rest ──────────────────────────────────
@@ -102,15 +100,11 @@ def test_sc8_effective_url_remains_https_after_any_redirects() -> None:
 @pytest.mark.compliance
 @pytest.mark.nist_sc28
 def test_sc28_response_does_not_contain_plaintext_credentials() -> None:
-    credential_pattern = re.compile(
-        r'(password|passwd|pwd)\s*[=:]\s*["\']?[^\s"\']{4,}', re.IGNORECASE
-    )
+    credential_pattern = re.compile(r'(password|passwd|pwd)\s*[=:]\s*["\']?[^\s"\']{4,}', re.IGNORECASE)
 
     with allure.step("Fetch user list and scan for plaintext credential patterns"):
         response = requests.get(f"{API_BASE}/users", timeout=10)
-        assert response.status_code == 200, (
-            f"SC-28 FAIL: expected 200, got {response.status_code}"
-        )
+        assert response.status_code == 200, f"SC-28 FAIL: expected 200, got {response.status_code}"
 
     with allure.step("Assert no plaintext credential pattern is present in the response"):
         matches = credential_pattern.findall(response.text)
@@ -120,9 +114,7 @@ def test_sc28_response_does_not_contain_plaintext_credentials() -> None:
                 name="SC-28 Plaintext Credentials",
                 attachment_type=allure.attachment_type.TEXT,
             )
-        assert not matches, (
-            f"SC-28 FAIL: response must not contain plaintext credentials, found: {matches}"
-        )
+        assert not matches, f"SC-28 FAIL: response must not contain plaintext credentials, found: {matches}"
 
 
 @allure.epic("NIST 800-53 Compliance")
@@ -151,9 +143,7 @@ def test_sc28_response_does_not_contain_credit_card_patterns() -> None:
                     name="SC-28 Credit Card Pattern",
                     attachment_type=allure.attachment_type.TEXT,
                 )
-            assert not matches, (
-                f"SC-28 FAIL: response from {resp.url} must not contain credit card patterns"
-            )
+            assert not matches, f"SC-28 FAIL: response from {resp.url} must not contain credit card patterns"
 
 
 @allure.epic("NIST 800-53 Compliance")
@@ -169,9 +159,7 @@ def test_sc28_response_does_not_contain_ssn_patterns() -> None:
 
     with allure.step("Fetch user data and scan for SSN patterns"):
         response = requests.get(f"{API_BASE}/users", timeout=10)
-        assert response.status_code == 200, (
-            f"SC-28 FAIL: expected 200, got {response.status_code}"
-        )
+        assert response.status_code == 200, f"SC-28 FAIL: expected 200, got {response.status_code}"
 
     with allure.step("Assert no SSN pattern is present in the response body"):
         matches = ssn_pattern.findall(response.text)
@@ -181,9 +169,7 @@ def test_sc28_response_does_not_contain_ssn_patterns() -> None:
                 name="SC-28 SSN Exposure",
                 attachment_type=allure.attachment_type.TEXT,
             )
-        assert not matches, (
-            f"SC-28 FAIL: response must not contain SSN patterns, found {len(matches)} match(es)"
-        )
+        assert not matches, f"SC-28 FAIL: response must not contain SSN patterns, found {len(matches)} match(es)"
 
 
 # ── IA-2: Identification and Authentication ───────────────────────────────────
@@ -214,9 +200,9 @@ def test_ia2_malformed_auth_header_handled_safely() -> None:
                 name="IA-2 5xx on Bad Token",
                 attachment_type=allure.attachment_type.TEXT,
             )
-        assert response.status_code < 500, (
-            f"IA-2 FAIL: malformed auth header must not produce 5xx, got {response.status_code}"
-        )
+        assert (
+            response.status_code < 500
+        ), f"IA-2 FAIL: malformed auth header must not produce 5xx, got {response.status_code}"
 
 
 @allure.epic("NIST 800-53 Compliance")
@@ -255,8 +241,7 @@ def test_ia2_repeated_auth_failures_do_not_expose_internals() -> None:
     with allure.step("Assert no 5xx response was returned across all attempts"):
         server_errors = [s for s in statuses if s >= 500]
         assert not server_errors, (
-            f"IA-2 FAIL: repeated auth failures must not expose 5xx errors, "
-            f"got: {server_errors}"
+            f"IA-2 FAIL: repeated auth failures must not expose 5xx errors, " f"got: {server_errors}"
         )
 
 
@@ -283,9 +268,9 @@ def test_ia2_empty_auth_header_does_not_crash_server() -> None:
                 name="IA-2 Empty Auth 5xx",
                 attachment_type=allure.attachment_type.TEXT,
             )
-        assert response.status_code < 500, (
-            f"IA-2 FAIL: empty auth header must not produce 5xx, got {response.status_code}"
-        )
+        assert (
+            response.status_code < 500
+        ), f"IA-2 FAIL: empty auth header must not produce 5xx, got {response.status_code}"
 
 
 # ── IA-5: Authenticator Management ────────────────────────────────────────────
@@ -336,9 +321,7 @@ def test_ia5_api_key_meets_minimum_length() -> None:
                 name="IA-5 Key Too Short",
                 attachment_type=allure.attachment_type.TEXT,
             )
-        assert len(key) >= min_length, (
-            f"IA-5 FAIL: API key must be at least {min_length} characters, got {len(key)}"
-        )
+        assert len(key) >= min_length, f"IA-5 FAIL: API key must be at least {min_length} characters, got {len(key)}"
 
 
 @allure.epic("NIST 800-53 Compliance")
@@ -367,6 +350,4 @@ def test_ia5_api_key_not_present_in_response_body() -> None:
                         name="IA-5 Key Leak",
                         attachment_type=allure.attachment_type.TEXT,
                     )
-                assert key not in resp.text, (
-                    f"IA-5 FAIL: API key must not appear in response body from {path}"
-                )
+                assert key not in resp.text, f"IA-5 FAIL: API key must not appear in response body from {path}"

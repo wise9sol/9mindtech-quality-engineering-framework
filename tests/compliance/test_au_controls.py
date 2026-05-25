@@ -26,12 +26,12 @@ def test_au2_successful_fetch_produces_traceable_response() -> None:
         response = requests.get(f"{API_BASE}/posts/1", timeout=10)
 
     with allure.step("Assert 200 and response time"):
-        assert response.status_code == 200, (
-            f"AU-2 FAIL: expected 200 for audit-traceable fetch, got {response.status_code}"
-        )
-        assert response.elapsed.total_seconds() * 1000 < 2000, (
-            "AU-2 FAIL: response must arrive within 2000ms for timely event logging"
-        )
+        assert (
+            response.status_code == 200
+        ), f"AU-2 FAIL: expected 200 for audit-traceable fetch, got {response.status_code}"
+        assert (
+            response.elapsed.total_seconds() * 1000 < 2000
+        ), "AU-2 FAIL: response must arrive within 2000ms for timely event logging"
 
     with allure.step("Assert response contains a traceable ID field"):
         body = response.json()
@@ -59,9 +59,7 @@ def test_au2_create_event_produces_auditable_record() -> None:
         response = requests.post(f"{API_BASE}/posts", json=payload, timeout=10)
 
     with allure.step("Assert 201 status"):
-        assert response.status_code == 201, (
-            f"AU-2 FAIL: create event must return 201, got {response.status_code}"
-        )
+        assert response.status_code == 201, f"AU-2 FAIL: create event must return 201, got {response.status_code}"
 
     with allure.step("Assert response contains an assigned ID for audit trail"):
         body = response.json()
@@ -72,9 +70,7 @@ def test_au2_create_event_produces_auditable_record() -> None:
                 attachment_type=allure.attachment_type.TEXT,
             )
         assert "id" in body, "AU-2 FAIL: create response must include an 'id' for audit trail"
-        assert isinstance(body["id"], int), (
-            f"AU-2 FAIL: audit ID must be an integer, got {type(body['id']).__name__}"
-        )
+        assert isinstance(body["id"], int), f"AU-2 FAIL: audit ID must be an integer, got {type(body['id']).__name__}"
 
 
 @allure.epic("NIST 800-53 Compliance")
@@ -91,14 +87,11 @@ def test_au2_failed_request_returns_loggable_error() -> None:
 
     with allure.step("Assert 404 status code is returned"):
         assert response.status_code == 404, (
-            f"AU-2 FAIL: missing resource must return 404 for loggable audit event, "
-            f"got {response.status_code}"
+            f"AU-2 FAIL: missing resource must return 404 for loggable audit event, " f"got {response.status_code}"
         )
 
     with allure.step("Assert response does not contain a 5xx internal error"):
-        assert response.status_code < 500, (
-            "AU-2 FAIL: server must not produce 5xx errors that obscure the audit event"
-        )
+        assert response.status_code < 500, "AU-2 FAIL: server must not produce 5xx errors that obscure the audit event"
 
 
 # ── AU-9: Protection of Audit Information ─────────────────────────────────────
@@ -125,15 +118,11 @@ def test_au9_audit_records_cannot_be_overwritten_arbitrarily() -> None:
                 name="AU-9 Server Error on PUT",
                 attachment_type=allure.attachment_type.TEXT,
             )
-        assert response.status_code < 500, (
-            f"AU-9 FAIL: PUT must not produce a 5xx error, got {response.status_code}"
-        )
+        assert response.status_code < 500, f"AU-9 FAIL: PUT must not produce a 5xx error, got {response.status_code}"
 
     with allure.step("Assert updated record retains its original ID"):
         body = response.json()
-        assert body.get("id") == 1, (
-            f"AU-9 FAIL: record ID must not change on update, got id={body.get('id')}"
-        )
+        assert body.get("id") == 1, f"AU-9 FAIL: record ID must not change on update, got id={body.get('id')}"
 
 
 @allure.epic("NIST 800-53 Compliance")
@@ -147,16 +136,12 @@ def test_au9_audit_records_cannot_be_overwritten_arbitrarily() -> None:
 def test_au9_audit_record_list_is_bounded() -> None:
     with allure.step("Fetch the full post list"):
         response = requests.get(f"{API_BASE}/posts", timeout=10)
-        assert response.status_code == 200, (
-            f"AU-9 FAIL: expected 200, got {response.status_code}"
-        )
+        assert response.status_code == 200, f"AU-9 FAIL: expected 200, got {response.status_code}"
 
     with allure.step("Assert the list has a finite, non-zero length"):
         records = response.json()
         assert len(records) > 0, "AU-9 FAIL: audit record list must not be empty"
-        assert len(records) <= 10000, (
-            f"AU-9 FAIL: record list must be bounded, got {len(records)} records"
-        )
+        assert len(records) <= 10000, f"AU-9 FAIL: record list must be bounded, got {len(records)} records"
 
 
 @allure.epic("NIST 800-53 Compliance")
@@ -170,9 +155,7 @@ def test_au9_audit_record_list_is_bounded() -> None:
 def test_au9_audit_record_ids_are_valid_positive_integers() -> None:
     with allure.step("Fetch posts and extract IDs"):
         response = requests.get(f"{API_BASE}/posts", timeout=10)
-        assert response.status_code == 200, (
-            f"AU-9 FAIL: expected 200, got {response.status_code}"
-        )
+        assert response.status_code == 200, f"AU-9 FAIL: expected 200, got {response.status_code}"
 
     with allure.step("Assert every record ID is a positive integer"):
         invalid = [r for r in response.json() if not isinstance(r.get("id"), int) or r["id"] <= 0]
@@ -183,8 +166,7 @@ def test_au9_audit_record_ids_are_valid_positive_integers() -> None:
                 attachment_type=allure.attachment_type.TEXT,
             )
         assert not invalid, (
-            f"AU-9 FAIL: all audit record IDs must be positive integers, "
-            f"found {len(invalid)} invalid record(s)"
+            f"AU-9 FAIL: all audit record IDs must be positive integers, " f"found {len(invalid)} invalid record(s)"
         )
 
 
@@ -206,9 +188,7 @@ def test_au12_post_generates_record_with_assigned_id() -> None:
         response = requests.post(f"{API_BASE}/posts", json=payload, timeout=10)
 
     with allure.step("Assert 201 and system-assigned ID"):
-        assert response.status_code == 201, (
-            f"AU-12 FAIL: record generation must return 201, got {response.status_code}"
-        )
+        assert response.status_code == 201, f"AU-12 FAIL: record generation must return 201, got {response.status_code}"
         body = response.json()
         if "id" not in body:
             allure.attach(
@@ -230,9 +210,7 @@ def test_au12_post_generates_record_with_assigned_id() -> None:
 def test_au12_generated_record_contains_required_audit_fields() -> None:
     with allure.step("Fetch a known record to verify its audit fields"):
         response = requests.get(f"{API_BASE}/posts/1", timeout=10)
-        assert response.status_code == 200, (
-            f"AU-12 FAIL: expected 200, got {response.status_code}"
-        )
+        assert response.status_code == 200, f"AU-12 FAIL: expected 200, got {response.status_code}"
 
     with allure.step("Assert all required audit fields are present"):
         body = response.json()
@@ -244,9 +222,7 @@ def test_au12_generated_record_contains_required_audit_fields() -> None:
                 name="AU-12 Incomplete Audit Record",
                 attachment_type=allure.attachment_type.TEXT,
             )
-        assert not missing, (
-            f"AU-12 FAIL: audit record must contain {required}, missing {missing}"
-        )
+        assert not missing, f"AU-12 FAIL: audit record must contain {required}, missing {missing}"
 
 
 @allure.epic("NIST 800-53 Compliance")
@@ -269,6 +245,5 @@ def test_au12_delete_returns_audit_compatible_status() -> None:
                 attachment_type=allure.attachment_type.TEXT,
             )
         assert response.status_code == 200, (
-            f"AU-12 FAIL: delete event must return 200 for audit compatibility, "
-            f"got {response.status_code}"
+            f"AU-12 FAIL: delete event must return 200 for audit compatibility, " f"got {response.status_code}"
         )

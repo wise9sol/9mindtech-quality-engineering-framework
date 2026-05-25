@@ -41,9 +41,9 @@ def test_ir5_burst_requests_handled_consistently() -> None:
                 name="IR-5 Inconsistent Burst Responses",
                 attachment_type=allure.attachment_type.TEXT,
             )
-        assert len(unique_statuses) == 1, (
-            f"IR-5 FAIL: burst requests must return consistent status, got {unique_statuses}"
-        )
+        assert (
+            len(unique_statuses) == 1
+        ), f"IR-5 FAIL: burst requests must return consistent status, got {unique_statuses}"
 
     with allure.step("Assert no 5xx was returned in the burst"):
         server_errors = [s for s in statuses if s >= 500]
@@ -53,9 +53,7 @@ def test_ir5_burst_requests_handled_consistently() -> None:
                 name="IR-5 Server Errors in Burst",
                 attachment_type=allure.attachment_type.TEXT,
             )
-        assert not server_errors, (
-            f"IR-5 FAIL: burst requests must not produce 5xx errors, got {server_errors}"
-        )
+        assert not server_errors, f"IR-5 FAIL: burst requests must not produce 5xx errors, got {server_errors}"
 
 
 @allure.epic("NIST 800-53 Compliance")
@@ -86,8 +84,7 @@ def test_ir5_malformed_content_type_handled_gracefully() -> None:
                 attachment_type=allure.attachment_type.TEXT,
             )
         assert response.status_code < 500, (
-            f"IR-5 FAIL: anomalous Content-Type must not crash the server, "
-            f"got {response.status_code}"
+            f"IR-5 FAIL: anomalous Content-Type must not crash the server, " f"got {response.status_code}"
         )
 
 
@@ -113,9 +110,9 @@ def test_ir5_unsupported_http_method_returns_client_error() -> None:
                 name="IR-5 Unsupported Method 5xx",
                 attachment_type=allure.attachment_type.TEXT,
             )
-        assert response.status_code < 500, (
-            f"IR-5 FAIL: unsupported HTTP method must return <500, got {response.status_code}"
-        )
+        assert (
+            response.status_code < 500
+        ), f"IR-5 FAIL: unsupported HTTP method must return <500, got {response.status_code}"
 
 
 # ── IR-6: Incident Reporting ──────────────────────────────────────────────────
@@ -137,15 +134,14 @@ def test_ir6_404_response_contains_reportable_information() -> None:
         response = requests.get(f"{API_BASE}/posts/99999", timeout=10)
 
     with allure.step("Assert 404 status code is present"):
-        assert response.status_code == 404, (
-            f"IR-6 FAIL: expected 404 for reportable error event, got {response.status_code}"
-        )
+        assert (
+            response.status_code == 404
+        ), f"IR-6 FAIL: expected 404 for reportable error event, got {response.status_code}"
 
     with allure.step("Assert response time is within reportable threshold"):
         elapsed_ms = response.elapsed.total_seconds() * 1000
         assert elapsed_ms < 2000, (
-            f"IR-6 FAIL: error response must arrive within 2000ms for timely reporting, "
-            f"took {elapsed_ms:.0f}ms"
+            f"IR-6 FAIL: error response must arrive within 2000ms for timely reporting, " f"took {elapsed_ms:.0f}ms"
         )
 
 
@@ -164,10 +160,7 @@ def test_ir6_error_responses_have_consistent_format() -> None:
     missing_ids = [99998, 99999]
 
     with allure.step("Send requests to two different non-existent resources"):
-        responses = [
-            requests.get(f"{API_BASE}/posts/{rid}", timeout=10)
-            for rid in missing_ids
-        ]
+        responses = [requests.get(f"{API_BASE}/posts/{rid}", timeout=10) for rid in missing_ids]
 
     with allure.step("Assert both return the same 404 status code"):
         statuses = [r.status_code for r in responses]
@@ -177,12 +170,8 @@ def test_ir6_error_responses_have_consistent_format() -> None:
                 name="IR-6 Inconsistent Error Statuses",
                 attachment_type=allure.attachment_type.TEXT,
             )
-        assert len(set(statuses)) == 1, (
-            f"IR-6 FAIL: error status codes must be consistent, got {statuses}"
-        )
-        assert statuses[0] == 404, (
-            f"IR-6 FAIL: missing resources must return 404, got {statuses[0]}"
-        )
+        assert len(set(statuses)) == 1, f"IR-6 FAIL: error status codes must be consistent, got {statuses}"
+        assert statuses[0] == 404, f"IR-6 FAIL: missing resources must return 404, got {statuses[0]}"
 
 
 @allure.epic("NIST 800-53 Compliance")
@@ -199,9 +188,7 @@ def test_ir6_error_responses_have_consistent_format() -> None:
 def test_ir6_successful_response_includes_identifiable_metadata() -> None:
     with allure.step("Fetch a known resource"):
         response = requests.get(f"{API_BASE}/posts/1", timeout=10)
-        assert response.status_code == 200, (
-            f"IR-6 FAIL: expected 200, got {response.status_code}"
-        )
+        assert response.status_code == 200, f"IR-6 FAIL: expected 200, got {response.status_code}"
 
     with allure.step("Assert response contains fields needed for incident correlation"):
         body = response.json()
@@ -214,6 +201,5 @@ def test_ir6_successful_response_includes_identifiable_metadata() -> None:
                 attachment_type=allure.attachment_type.TEXT,
             )
         assert not missing, (
-            f"IR-6 FAIL: response must contain {required} for incident correlation, "
-            f"missing {missing}"
+            f"IR-6 FAIL: response must contain {required} for incident correlation, " f"missing {missing}"
         )

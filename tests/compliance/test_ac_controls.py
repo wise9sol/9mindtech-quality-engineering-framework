@@ -27,12 +27,10 @@ def test_ac2_account_list_exposes_expected_fields() -> None:
         response = requests.get(f"{API_BASE}/users", timeout=10)
 
     with allure.step("Assert 200 status and response time"):
-        assert response.status_code == 200, (
-            f"AC-2 FAIL: account list endpoint must return 200, got {response.status_code}"
-        )
-        assert response.elapsed.total_seconds() * 1000 < 2000, (
-            "AC-2 FAIL: account list must respond within 2000ms"
-        )
+        assert (
+            response.status_code == 200
+        ), f"AC-2 FAIL: account list endpoint must return 200, got {response.status_code}"
+        assert response.elapsed.total_seconds() * 1000 < 2000, "AC-2 FAIL: account list must respond within 2000ms"
 
     with allure.step("Assert required fields are present on every record"):
         users = response.json()
@@ -45,9 +43,7 @@ def test_ac2_account_list_exposes_expected_fields() -> None:
                     name="AC-2 Missing Fields",
                     attachment_type=allure.attachment_type.TEXT,
                 )
-            assert not missing, (
-                f"AC-2 FAIL: account record must contain {required}, missing {missing}"
-            )
+            assert not missing, f"AC-2 FAIL: account record must contain {required}, missing {missing}"
 
 
 @allure.epic("NIST 800-53 Compliance")
@@ -61,9 +57,7 @@ def test_ac2_account_list_exposes_expected_fields() -> None:
 def test_ac2_account_ids_are_unique() -> None:
     with allure.step("Fetch all user accounts"):
         response = requests.get(f"{API_BASE}/users", timeout=10)
-        assert response.status_code == 200, (
-            f"AC-2 FAIL: expected 200, got {response.status_code}"
-        )
+        assert response.status_code == 200, f"AC-2 FAIL: expected 200, got {response.status_code}"
 
     with allure.step("Extract and deduplicate account IDs"):
         users = response.json()
@@ -77,9 +71,7 @@ def test_ac2_account_ids_are_unique() -> None:
                 name="AC-2 Duplicate Account IDs",
                 attachment_type=allure.attachment_type.TEXT,
             )
-        assert not duplicates, (
-            f"AC-2 FAIL: account IDs must be unique, found duplicates: {duplicates}"
-        )
+        assert not duplicates, f"AC-2 FAIL: account IDs must be unique, found duplicates: {duplicates}"
 
 
 @allure.epic("NIST 800-53 Compliance")
@@ -93,9 +85,7 @@ def test_ac2_account_ids_are_unique() -> None:
 def test_ac2_accounts_linked_to_organisation() -> None:
     with allure.step("Fetch all user accounts"):
         response = requests.get(f"{API_BASE}/users", timeout=10)
-        assert response.status_code == 200, (
-            f"AC-2 FAIL: expected 200, got {response.status_code}"
-        )
+        assert response.status_code == 200, f"AC-2 FAIL: expected 200, got {response.status_code}"
 
     with allure.step("Assert every account contains a company field"):
         for user in response.json():
@@ -105,9 +95,7 @@ def test_ac2_accounts_linked_to_organisation() -> None:
                     name="AC-2 Missing Organisation",
                     attachment_type=allure.attachment_type.TEXT,
                 )
-            assert "company" in user, (
-                f"AC-2 FAIL: account must be linked to an organisation, user id={user.get('id')}"
-            )
+            assert "company" in user, f"AC-2 FAIL: account must be linked to an organisation, user id={user.get('id')}"
 
 
 # ── AC-3: Access Enforcement ───────────────────────────────────────────────────
@@ -124,9 +112,7 @@ def test_ac2_accounts_linked_to_organisation() -> None:
 def test_ac3_response_does_not_expose_sensitive_keywords() -> None:
     with allure.step("Send request to user resource"):
         response = requests.get(f"{API_BASE}/users/1", timeout=10)
-        assert response.status_code == 200, (
-            f"AC-3 FAIL: expected 200, got {response.status_code}"
-        )
+        assert response.status_code == 200, f"AC-3 FAIL: expected 200, got {response.status_code}"
 
     with allure.step("Scan response body for sensitive keywords"):
         body = response.text.lower()
@@ -137,9 +123,7 @@ def test_ac3_response_does_not_expose_sensitive_keywords() -> None:
                     name="AC-3 Sensitive Data Exposure",
                     attachment_type=allure.attachment_type.TEXT,
                 )
-            assert keyword not in body, (
-                f"AC-3 FAIL: response must not expose '{keyword}'"
-            )
+            assert keyword not in body, f"AC-3 FAIL: response must not expose '{keyword}'"
 
 
 @allure.epic("NIST 800-53 Compliance")
@@ -161,9 +145,9 @@ def test_ac3_nonexistent_resource_returns_404() -> None:
                 name="AC-3 Unexpected Response",
                 attachment_type=allure.attachment_type.TEXT,
             )
-        assert response.status_code == 404, (
-            f"AC-3 FAIL: non-existent resource must return 404, got {response.status_code}"
-        )
+        assert (
+            response.status_code == 404
+        ), f"AC-3 FAIL: non-existent resource must return 404, got {response.status_code}"
 
 
 @allure.epic("NIST 800-53 Compliance")
@@ -178,12 +162,8 @@ def test_ac3_query_filter_restricts_results_to_authorised_records() -> None:
     target_user_id = 1
 
     with allure.step(f"Fetch posts filtered to userId={target_user_id}"):
-        response = requests.get(
-            f"{API_BASE}/posts", params={"userId": target_user_id}, timeout=10
-        )
-        assert response.status_code == 200, (
-            f"AC-3 FAIL: expected 200, got {response.status_code}"
-        )
+        response = requests.get(f"{API_BASE}/posts", params={"userId": target_user_id}, timeout=10)
+        assert response.status_code == 200, f"AC-3 FAIL: expected 200, got {response.status_code}"
 
     with allure.step("Assert all returned records belong to the requested user"):
         wrong = [p for p in response.json() if p.get("userId") != target_user_id]
@@ -221,9 +201,7 @@ def test_ac17_api_base_url_uses_https() -> None:
                 name="AC-17 Insecure URL",
                 attachment_type=allure.attachment_type.TEXT,
             )
-        assert url.startswith("https://"), (
-            f"AC-17 FAIL: API_BASE_URL must use HTTPS, got '{url}'"
-        )
+        assert url.startswith("https://"), f"AC-17 FAIL: API_BASE_URL must use HTTPS, got '{url}'"
 
 
 @allure.epic("NIST 800-53 Compliance")
@@ -245,9 +223,7 @@ def test_ac17_base_url_uses_https() -> None:
                 name="AC-17 Insecure Base URL",
                 attachment_type=allure.attachment_type.TEXT,
             )
-        assert url.startswith("https://"), (
-            f"AC-17 FAIL: BASE_URL must use HTTPS, got '{url}'"
-        )
+        assert url.startswith("https://"), f"AC-17 FAIL: BASE_URL must use HTTPS, got '{url}'"
 
 
 @allure.epic("NIST 800-53 Compliance")
@@ -272,6 +248,6 @@ def test_ac17_remote_api_responds_within_latency_threshold() -> None:
                 name="AC-17 Latency Breach",
                 attachment_type=allure.attachment_type.TEXT,
             )
-        assert elapsed_ms < threshold_ms, (
-            f"AC-17 FAIL: remote API must respond within {threshold_ms}ms, took {elapsed_ms:.0f}ms"
-        )
+        assert (
+            elapsed_ms < threshold_ms
+        ), f"AC-17 FAIL: remote API must respond within {threshold_ms}ms, took {elapsed_ms:.0f}ms"
