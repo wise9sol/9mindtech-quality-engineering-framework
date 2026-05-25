@@ -296,6 +296,9 @@ jobs:
       - name: Write Allure environment properties
         if: always()
         shell: bash
+        env:
+          CLIENT_NAME: ${{ secrets.CLIENT_NAME }}
+          CLIENT_INDUSTRY: ${{ secrets.CLIENT_INDUSTRY }}
         run: |
           mkdir -p reports/allure-results
           {
@@ -305,8 +308,8 @@ jobs:
             echo "Contact.Email=wise9mind.solutions@gmail.com"
             echo "Contact.Phone=(240) 269-8965"
             echo "Book.Demo=calendly.com/9mindtech_qa-automation-call"
-            echo "Client.Name=${{ secrets.CLIENT_NAME }}"
-            echo "Client.Industry=${{ secrets.CLIENT_INDUSTRY }}"
+            echo "Client.Name=${CLIENT_NAME}"
+            echo "Client.Industry=${CLIENT_INDUSTRY}"
             echo "Language=Python 3.13"
             echo "Test.Runner=pytest 8.3.5"
             echo "Compliance.Standard=NIST 800-53 Rev 5"
