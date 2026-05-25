@@ -374,12 +374,6 @@ jobs:
           path: reports/allure-nist-report/
           retention-days: 90
 
-      - name: Upload Pages artifact (push to main only)
-        if: always() && github.ref == 'refs/heads/main' && github.event_name == 'push'
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: reports/allure-nist-report
-
       - name: Write job summary
         if: always()
         shell: bash
