@@ -82,7 +82,7 @@ def load_allure_results(
     failed = []
     for json_file in results_path.glob("*-result.json"):
         try:
-            data = json.loads(json_file.read_text())
+            data = json.loads(json_file.read_text(encoding="utf-8"))
             if data.get("status") not in ("failed", "broken"):
                 continue
 
