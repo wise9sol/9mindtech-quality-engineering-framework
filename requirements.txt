@@ -8,6 +8,7 @@ pytest-html==4.1.1
 pytest-xdist==3.6.1
 python-dotenv==1.0.1
 allure-pytest==2.13.5
+allure-python-commons==2.13.5
 anthropic==0.49.0
 jsonschema==4.26.0
 mypy==2.1.0
