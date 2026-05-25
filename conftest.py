@@ -80,8 +80,8 @@ def api_base_url() -> str:
 def valid_credentials() -> dict[str, str]:
     """Valid login credentials for the-internet.herokuapp.com."""
     return {
-        "username": os.getenv("TEST_USERNAME", "tomsmith"),
-        "password": os.getenv("TEST_PASSWORD", "SuperSecretPassword!"),
+        "username": os.getenv("TEST_USERNAME", "tomsmith").strip("﻿").strip(),
+        "password": os.getenv("TEST_PASSWORD", "SuperSecretPassword!").strip("﻿").strip(),
     }
 
 

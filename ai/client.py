@@ -26,7 +26,7 @@ def get_client() -> Anthropic:
     if _client is None:
         with _client_lock:
             if _client is None:
-                api_key = os.getenv("ANTHROPIC_API_KEY")
+                api_key = os.getenv("ANTHROPIC_API_KEY", "").strip("﻿").strip()
                 if not api_key:
                     raise EnvironmentError("ANTHROPIC_API_KEY not set. Add it to your .env file.")
                 _client = Anthropic(api_key=api_key)
