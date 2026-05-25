@@ -261,7 +261,7 @@ def test_ac17_base_url_uses_https() -> None:
 def test_ac17_remote_api_responds_within_latency_threshold() -> None:
     threshold_ms = 2000
 
-    with allure.step(f"Send remote request and capture elapsed time"):
+    with allure.step("Send remote request and capture elapsed time"):
         response = requests.get(f"{API_BASE}/users/1", timeout=10)
         elapsed_ms = response.elapsed.total_seconds() * 1000
 
