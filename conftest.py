@@ -28,6 +28,24 @@ def pytest_addoption(parser: pytest.Parser) -> None:
 
 def pytest_configure(config: pytest.Config) -> None:
     config.pluginmanager.register(SelfHealingPlugin(), "self_healing")
+    config.addinivalue_line("markers", "nist_ac2: NIST 800-53 AC-2 Account Management")
+    config.addinivalue_line("markers", "nist_ac3: NIST 800-53 AC-3 Access Enforcement")
+    config.addinivalue_line("markers", "nist_ac17: NIST 800-53 AC-17 Remote Access")
+    config.addinivalue_line("markers", "nist_au2: NIST 800-53 AU-2 Event Logging")
+    config.addinivalue_line("markers", "nist_au9: NIST 800-53 AU-9 Protection of Audit Information")
+    config.addinivalue_line("markers", "nist_au12: NIST 800-53 AU-12 Audit Record Generation")
+    config.addinivalue_line("markers", "nist_si2: NIST 800-53 SI-2 Flaw Remediation")
+    config.addinivalue_line("markers", "nist_si10: NIST 800-53 SI-10 Information Input Validation")
+    config.addinivalue_line("markers", "nist_si12: NIST 800-53 SI-12 Information Management and Retention")
+    config.addinivalue_line("markers", "nist_ir5: NIST 800-53 IR-5 Incident Monitoring")
+    config.addinivalue_line("markers", "nist_ir6: NIST 800-53 IR-6 Incident Reporting")
+    config.addinivalue_line("markers", "nist_sc8: NIST 800-53 SC-8 Transmission Confidentiality and Integrity")
+    config.addinivalue_line("markers", "nist_sc28: NIST 800-53 SC-28 Protection of Information at Rest")
+    config.addinivalue_line("markers", "nist_ia2: NIST 800-53 IA-2 Identification and Authentication")
+    config.addinivalue_line("markers", "nist_ia5: NIST 800-53 IA-5 Authenticator Management")
+    config.addinivalue_line("markers", "compliance: cross-cutting compliance tests")
+    config.addinivalue_line("markers", "healthcare: healthcare regulatory tests")
+    config.addinivalue_line("markers", "finance: finance regulatory tests")
 
 
 @pytest.fixture(scope="session")
