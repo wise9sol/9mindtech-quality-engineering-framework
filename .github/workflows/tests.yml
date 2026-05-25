@@ -3,6 +3,8 @@ on:
   push:
   pull_request:
   workflow_dispatch:
+  schedule:
+    - cron: "0 2 * * *"
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
@@ -256,3 +258,143 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  nist-validation:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: "pip"
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Restore Allure history cache
+        uses: actions/cache@v4
+        with:
+          path: reports/allure-history
+          key: allure-nist-history-${{ github.ref_name }}
+          restore-keys: allure-nist-history-
+
+      - name: Run NIST compliance tests
+        continue-on-error: true
+        run: |
+          python -m pytest tests/compliance/ \
+            --alluredir=reports/allure-results \
+            -n auto -v --tb=short
+        env:
+          API_BASE_URL: ${{ secrets.API_BASE_URL || 'https://jsonplaceholder.typicode.com' }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ADMIN_TOKEN: ${{ secrets.ADMIN_TOKEN }}
+          USER_TOKEN: ${{ secrets.USER_TOKEN }}
+          READONLY_TOKEN: ${{ secrets.READONLY_TOKEN }}
+          DEPROVISIONED_TOKEN: ${{ secrets.DEPROVISIONED_TOKEN }}
+          EXPIRED_TOKEN: ${{ secrets.EXPIRED_TOKEN }}
+          CLIENT_NAME: ${{ secrets.CLIENT_NAME }}
+          CLIENT_INDUSTRY: ${{ secrets.CLIENT_INDUSTRY }}
+
+      - name: Copy Allure branding files
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p reports/allure-results
+          for f in \
+            reports/allure-results/environment.properties \
+            reports/allure-results/categories.json \
+            reports/allure-results/custom.css; do
+            if [ -f "$f" ]; then
+              cp "$f" reports/allure-results/
+            fi
+          done
+
+      - name: Write Allure environment properties
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p reports/allure-results
+          {
+            echo "Platform=QualiOps AI"
+            echo "Product=QualiOps AI Quality Engineering Platform"
+            echo "Vendor=9MindTech / Wise 9 Mind Solutions LLC"
+            echo "Contact.Email=wise9mind.solutions@gmail.com"
+            echo "Contact.Phone=(240) 269-8965"
+            echo "Book.Demo=calendly.com/9mindtech_qa-automation-call"
+            echo "Client.Name=${{ secrets.CLIENT_NAME }}"
+            echo "Client.Industry=${{ secrets.CLIENT_INDUSTRY }}"
+            echo "Language=Python 3.13"
+            echo "Test.Runner=pytest 8.3.5"
+            echo "Compliance.Standard=NIST 800-53 Rev 5"
+            echo "Control.Families=AC, AU, SI, IR, SC, IA"
+            echo "Branch=${{ github.ref_name }}"
+            echo "Commit=${{ github.sha }}"
+            echo "API.Base.URL=${{ secrets.API_BASE_URL || 'https://jsonplaceholder.typicode.com' }}"
+          } > reports/allure-results/environment.properties
+
+      - name: Install Allure CLI 2.27.0
+        if: always()
+        run: |
+          curl -sLo allure.tgz \
+            https://github.com/allure-framework/allure2/releases/download/2.27.0/allure-2.27.0.tgz
+          tar -xzf allure.tgz
+          sudo mv allure-2.27.0 /opt/allure
+          sudo ln -sf /opt/allure/bin/allure /usr/local/bin/allure
+
+      - name: Generate Allure NIST report
+        if: always()
+        run: |
+          [ -d reports/allure-history ] && \
+            cp -r reports/allure-history reports/allure-results/history || true
+          allure generate reports/allure-results \
+            --clean \
+            --report-name "QualiOps AI — NIST Control Validation Report" \
+            -o reports/allure-nist-report
+
+      - name: Save Allure history cache
+        if: always()
+        run: |
+          mkdir -p reports/allure-history
+          [ -d reports/allure-nist-report/history ] && \
+            cp -r reports/allure-nist-report/history/. reports/allure-history/ || true
+
+      - name: Upload NIST report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nist-validation-report
+          path: reports/allure-nist-report/
+          retention-days: 90
+
+      - name: Upload Pages artifact (push to main only)
+        if: always() && github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: reports/allure-nist-report
+
+      - name: Write job summary
+        if: always()
+        shell: bash
+        run: |
+          echo "## QualiOps AI — NIST Control Validation" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Control Family | Tests |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| AC — Access Control | AC-2, AC-3, AC-17 |" >> $GITHUB_STEP_SUMMARY
+          echo "| AU — Audit and Accountability | AU-2, AU-9, AU-12 |" >> $GITHUB_STEP_SUMMARY
+          echo "| SI — System Integrity | SI-2, SI-10, SI-12 |" >> $GITHUB_STEP_SUMMARY
+          echo "| SC — System Protection | SC-8, SC-28 |" >> $GITHUB_STEP_SUMMARY
+          echo "| IA — Identity and Authentication | IA-2, IA-5 |" >> $GITHUB_STEP_SUMMARY
+          echo "| IR — Incident Response | IR-5, IR-6 |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Report**: uploaded as artifact \`nist-validation-report\` (90-day retention)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "_QualiOps AI · wise9mind.solutions@gmail.com · (240) 269-8965_" >> $GITHUB_STEP_SUMMARY
