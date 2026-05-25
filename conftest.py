@@ -2,9 +2,12 @@
 """Root conftest — all shared fixtures, hooks, and plugin registration for the 9MindTech framework."""
 
 import os
+import re
 from pathlib import Path
 from datetime import datetime
 from typing import Generator
+
+import allure
 
 import pytest
 from dotenv import load_dotenv
@@ -162,5 +165,17 @@ def pytest_runtest_makereport(
                     print(f"\nScreenshot saved: {screenshot_path}")
                 except Exception as e:
                     print(f"\nScreenshot failed: {e}")
+
+            nist_controls = [
+                re.sub(r"([A-Z]+)(\d+)", r"\1-\2", m.name.replace("nist_", "").upper())
+                for m in item.iter_markers()
+                if m.name.startswith("nist_")
+            ]
+            if nist_controls:
+                allure.attach(
+                    f"Test: {item.name}\nFailing controls: {', '.join(nist_controls)}",
+                    name="NIST 800-53 Failing Controls",
+                    attachment_type=allure.attachment_type.TEXT,
+                )
 
     return report
