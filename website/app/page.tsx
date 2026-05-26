@@ -3,6 +3,7 @@ import Hero from "@/components/Hero";
 import Demo from "@/components/Demo";
 import HowItWorks from "@/components/HowItWorks";
 import Features from "@/components/Features";
+import NistCompliance from "@/components/NistCompliance";
 import CaseStudy from "@/components/CaseStudy";
 import Pricing from "@/components/Pricing";
 import ApiDocs from "@/components/ApiDocs";
@@ -17,6 +18,7 @@ export default function Home() {
       <Demo />
       <HowItWorks />
       <Features />
+      <NistCompliance />
       <CaseStudy />
       <Pricing />
       <ApiDocs />

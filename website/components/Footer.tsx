@@ -65,19 +65,27 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-white/[0.06] pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-slate-600 text-sm">
-            &copy; {new Date().getFullYear()} 9MindTech. All rights reserved.
+        <div className="border-t border-white/[0.06] pt-8 space-y-4">
+          <p className="text-slate-600 text-xs leading-relaxed max-w-3xl">
+            QualiOps validates technical controls and generates audit evidence.
+            This supports but does not replace formal compliance certification or
+            third-party assessment. Final compliance determination requires a
+            qualified assessor.
           </p>
-          <div className="flex items-center gap-4 text-slate-600 text-sm">
-            <span>MIT License</span>
-            <span>&middot;</span>
-            <a
-              href="mailto:wise9mind.solutions@gmail.com"
-              className="hover:text-slate-300 transition-colors"
-            >
-              wise9mind.solutions@gmail.com
-            </a>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <p className="text-slate-600 text-sm">
+              &copy; {new Date().getFullYear()} 9MindTech. All rights reserved.
+            </p>
+            <div className="flex items-center gap-4 text-slate-600 text-sm">
+              <span>MIT License</span>
+              <span>&middot;</span>
+              <a
+                href="mailto:wise9mind.solutions@gmail.com"
+                className="hover:text-slate-300 transition-colors"
+              >
+                wise9mind.solutions@gmail.com
+              </a>
+            </div>
           </div>
         </div>
       </div>

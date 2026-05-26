@@ -1,8 +1,8 @@
 const FEATURES = [
   {
-    title: "Natural Language Test Creation",
+    title: "Continuous Technical Control Validation",
     description:
-      "Write requirements in plain English. QualiOps translates them into executable pytest + Playwright code — complete with markers, docstrings, and assertions that conform to your coding standards.",
+      "Translate requirements directly into executable control validation tests. QualiOps maps each spec to the corresponding NIST 800-53 control and runs it on every deployment — evidence generated automatically.",
     badge: "Core",
     color: "indigo" as const,
     icon: (
@@ -12,9 +12,9 @@ const FEATURES = [
     ),
   },
   {
-    title: "Self-Healing Tests",
+    title: "Automated Remediation Context",
     description:
-      "UI redesigns break brittle selectors. QualiOps detects locator drift and automatically patches tests to match the updated structure — every change logged to a full audit trail.",
+      "When a control check fails, QualiOps detects the drift and surfaces targeted remediation context — what changed, what broke, and what the control requires. Every finding is logged to a full audit trail.",
     badge: "Intelligent",
     color: "purple" as const,
     icon: (
@@ -24,10 +24,10 @@ const FEATURES = [
     ),
   },
   {
-    title: "Instant Results via REST API",
+    title: "Continuous Evidence Generation",
     description:
-      "Submit a spec, receive a run ID immediately, poll for results or receive a webhook callback. Every result includes a full Allure report and stdout log — integrates into any pipeline in minutes.",
-    badge: "Fast",
+      "Every test run produces a timestamped Allure report mapped to control families. Evidence is structured for auditor review and exportable via REST API — no manual documentation required.",
+    badge: "Audit-Ready",
     color: "emerald" as const,
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -36,9 +36,9 @@ const FEATURES = [
     ),
   },
   {
-    title: "8+ Scenarios from One Spec",
+    title: "Comprehensive Control Enforcement Coverage",
     description:
-      "One sentence generates a complete test matrix: happy paths, invalid inputs, SQL injection, boundary values, session behaviour, performance assertions, and accessibility checks — automatically.",
+      "8+ validation scenarios per control — access enforcement, transmission confidentiality, input validation, audit record generation, and more — executed across every build, not just at audit time.",
     badge: "Comprehensive",
     color: "amber" as const,
     icon: (
@@ -72,11 +72,11 @@ export default function Features() {
             Features
           </p>
           <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-            Everything your QA team needs — automated
+            Continuous compliance validation — built into your pipeline
           </h2>
           <p className="text-slate-400 max-w-xl mx-auto">
-            QualiOps replaces hours of manual test authoring with seconds of AI
-            generation, so your engineers can focus on building.
+            QualiOps continuously validates technical controls, generates audit
+            evidence, and surfaces remediation context — on every deployment.
           </p>
         </div>
 

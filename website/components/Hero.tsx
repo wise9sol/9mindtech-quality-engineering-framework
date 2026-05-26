@@ -34,17 +34,14 @@ export default function Hero() {
           </div>
 
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-6 max-w-4xl leading-tight">
-            <span className="gradient-text">AI-Powered Test Automation.</span>
+            <span className="gradient-text">Continuous Compliance Validation</span>
             <br />
-            <span className="text-white">From English to Execution</span>
-            <br />
-            <span className="text-white">in Seconds.</span>
+            <span className="text-white">for the SDLC.</span>
           </h1>
 
           <p className="text-lg sm:text-xl text-slate-400 max-w-2xl mb-10 leading-relaxed">
-            Describe what you want to test in plain English. QualiOps generates
-            8+ production-grade Playwright test scenarios and executes them
-            instantly — no scripting, no framework setup, no QA bottleneck.
+            Continuously validate and document technical control enforcement
+            across your software delivery lifecycle.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 mb-12">
@@ -65,7 +62,12 @@ export default function Hero() {
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-6 text-slate-500 text-sm">
-            {["No test scripting", "CI/CD ready", "14-day free trial"].map((t) => (
+            {[
+              "Technical control validation",
+              "Continuous evidence generation",
+              "Audit support",
+              "Compliance acceleration",
+            ].map((t) => (
               <div key={t} className="flex items-center gap-2">
                 {CHECK_ICON}
                 <span>{t}</span>

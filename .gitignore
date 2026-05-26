@@ -85,6 +85,7 @@ reports/
 allure-results/
 allure-report/
 *.html
+!index.html
 !docs/**/*.html
 
 # ── Logs ──────────────────────────────────────────────────────────────────────
