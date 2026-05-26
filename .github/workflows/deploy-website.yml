@@ -4,37 +4,28 @@ on:
   push:
     branches: [main]
     paths:
+      - "index.html"
       - "website/**"
       - "netlify.toml"
   workflow_dispatch:
 
 jobs:
   deploy:
-    name: Build & Deploy to Netlify
+    name: Deploy to Netlify
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v5
-        with:
-          node-version: "20"
-          cache: "npm"
-          cache-dependency-path: "website/package-lock.json"
-
-      - name: Install dependencies
-        working-directory: website
-        run: npm ci
-
-      - name: Build website
-        working-directory: website
-        run: npm run build
+      - name: Prepare deploy directory
+        run: |
+          mkdir -p dist
+          cp index.html dist/
 
       - name: Install Netlify CLI
         run: npm install -g netlify-cli
 
       - name: Deploy to Netlify
-        working-directory: website
-        run: netlify deploy --dir=out --prod --message "Deploy from GitHub Actions (${GITHUB_SHA::7})"
+        run: netlify deploy --dir=dist --prod --message "Deploy from GitHub Actions (${GITHUB_SHA::7})"
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
