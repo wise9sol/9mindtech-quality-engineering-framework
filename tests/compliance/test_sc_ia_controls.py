@@ -8,7 +8,6 @@ import allure
 import pytest
 import requests
 
-
 # ── SC-8: Transmission Confidentiality and Integrity ──────────────────────────
 
 

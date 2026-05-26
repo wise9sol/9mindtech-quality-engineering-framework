@@ -5,7 +5,6 @@ import allure
 import pytest
 import requests
 
-
 # ── AU-2: Event Logging ────────────────────────────────────────────────────────
 
 

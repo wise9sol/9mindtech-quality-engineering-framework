@@ -5,7 +5,6 @@ import allure
 import pytest
 import requests
 
-
 # ── IR-5: Incident Monitoring ─────────────────────────────────────────────────
 
 

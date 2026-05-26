@@ -7,7 +7,6 @@ import allure
 import pytest
 import requests
 
-
 # ── AC-2: Account Management ───────────────────────────────────────────────────
 
 
