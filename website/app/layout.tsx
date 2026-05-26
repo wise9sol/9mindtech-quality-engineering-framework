@@ -11,8 +11,8 @@ export const metadata: Metadata = {
   keywords:
     "test automation, AI testing, Playwright, natural language, QA automation, pytest, CI/CD",
   icons: {
-    icon: "/qualiaps-logo-transparent.png",
-    apple: "/qualiaps-logo-transparent.png",
+    icon: "/logo.png",
+    apple: "/logo.png",
   },
   openGraph: {
     title: "QualiOps AI — Autonomous Quality Engineering Platform",

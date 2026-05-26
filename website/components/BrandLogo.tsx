@@ -26,7 +26,7 @@ export default function BrandLogo({ height, className = "", priority = false }: 
 
   return (
     <Image
-      src="/qualiaps-logo-transparent.png"
+      src="/logo.png"
       alt="QualiOps AI by 9MindTech"
       width={400}
       height={120}
