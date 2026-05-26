@@ -21,7 +21,7 @@ export default function Hero() {
           {/* Hero badge logo */}
           <div className="mb-6">
             <BrandLogo
-              height={60}
+              height={200}
               priority
               className="drop-shadow-[0_0_40px_rgba(99,102,241,0.35)]"
             />
