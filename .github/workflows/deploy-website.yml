@@ -5,7 +5,6 @@ on:
     branches: [main]
     paths:
       - "website/**"
-      - "index.html"
       - "netlify.toml"
   workflow_dispatch:
 
@@ -22,15 +21,20 @@ jobs:
           cache: "npm"
           cache-dependency-path: "website/package-lock.json"
 
-      - name: Install Netlify CLI
-        run: npm install -g netlify-cli
-
-      - name: Install website dependencies
+      - name: Install dependencies
         working-directory: website
         run: npm ci
 
-      - name: Deploy to Netlify (build + publish)
-        run: netlify deploy --build --prod --message "Deploy from GitHub Actions (${GITHUB_SHA::7})"
+      - name: Build website
+        working-directory: website
+        run: npm run build
+
+      - name: Install Netlify CLI
+        run: npm install -g netlify-cli
+
+      - name: Deploy to Netlify
+        working-directory: website
+        run: netlify deploy --dir=out --prod --message "Deploy from GitHub Actions (${GITHUB_SHA::7})"
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
