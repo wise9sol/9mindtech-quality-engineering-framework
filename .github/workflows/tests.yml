@@ -339,6 +339,12 @@ jobs:
           path: reports/allure-nist-report/
           retention-days: 90
 
+      - name: Upload Pages artifact
+        if: always() && github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: reports/allure-nist-report/
+
       - name: Write job summary
         if: always()
         shell: bash
@@ -357,3 +363,18 @@ jobs:
           echo "**Report**: uploaded as artifact \`nist-validation-report\` (90-day retention)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "_QualiOps AI · wise9mind.solutions@gmail.com · (240) 269-8965_" >> $GITHUB_STEP_SUMMARY
+
+  deploy-pages:
+    needs: nist-validation
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy NIST report to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

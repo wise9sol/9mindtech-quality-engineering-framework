@@ -162,6 +162,9 @@ node_modules/
 .next/
 next-env.d.ts
 
+# ── GitHub Pages local cache ──────────────────────────────────────────────────
+github-pages/
+
 # ── Misc artifacts ────────────────────────────────────────────────────────────
 artifacts/
 ai_test_output.txt
