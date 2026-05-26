@@ -2,6 +2,7 @@
 """NIST 800-53 System and Information Integrity tests — SI-2, SI-10, SI-12."""
 
 import os
+import re
 
 import allure
 import pytest
@@ -28,8 +29,6 @@ def test_si2_server_header_does_not_expose_version() -> None:
 
     with allure.step("Assert Server header does not contain a version string"):
         server = response.headers.get("Server", "")
-        import re
-
         version_pattern = re.compile(r"\d+\.\d+")
         if version_pattern.search(server):
             allure.attach(

@@ -139,6 +139,7 @@ $RECYCLE.BIN/
 *.iws
 *.ipr
 out/
+tests/test_sources_root/
 
 # ── IDE — other ───────────────────────────────────────────────────────────────
 *.swp

@@ -16,6 +16,7 @@ from pydantic import BaseModel
 import subprocess
 
 from ai.client import get_client, CLAUDE_MODEL, extract_text
+from utils.config import BASE_URL
 
 app = FastAPI(
     title="QualiOps AI Quality Engine",
@@ -73,7 +74,7 @@ def translate_steps(steps: list[TestStep]):
 
     # Real method signatures from LoginPage / BasePage
     available_methods = [
-        "login_page.navigate('https://the-internet.herokuapp.com/login')",
+        f"login_page.navigate('{BASE_URL}/login')",
         f"login_page.login('{_VALID_USERNAME}', '{_VALID_PASSWORD}')",
         "login_page.fill(login_page.username, 'value')",
         "login_page.fill(login_page.password, 'value')",
@@ -233,7 +234,7 @@ def generate_test_from_spec(spec: str) -> str:
 Requirement: {spec}
 
 APPLICATION UNDER TEST:
-- Login page URL : https://the-internet.herokuapp.com/login
+- Login page URL : {BASE_URL}/login
 - Valid username  : {_VALID_USERNAME}
 - Valid password  : {_VALID_PASSWORD}
 - Success indicator: page.url contains "/secure" after login
@@ -270,12 +271,12 @@ CORRECT usage — option A (use the combined login method):
     def test_login_succeeds_with_valid_credentials(page):
         \"\"\"AI-generated on 2026-05-12.\"\"\"
         login_page = LoginPage(page)
-        login_page.navigate("https://the-internet.herokuapp.com/login")
+        login_page.navigate("{BASE_URL}/login")
         login_page.login("{_VALID_USERNAME}", "{_VALID_PASSWORD}")
         assert "/secure" in page.url
 
 CORRECT usage — option B (fill fields individually using the locator attributes):
-    login_page.navigate("https://the-internet.herokuapp.com/login")
+    login_page.navigate("{BASE_URL}/login")
     login_page.fill(login_page.username, "{_VALID_USERNAME}")
     login_page.fill(login_page.password, "{_VALID_PASSWORD}")
     login_page.click(login_page.login_button)
