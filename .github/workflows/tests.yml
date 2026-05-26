@@ -305,20 +305,6 @@ jobs:
             echo "API.Base.URL=${{ secrets.API_BASE_URL || 'https://jsonplaceholder.typicode.com' }}"
           } > reports/allure-results/environment.properties
 
-      - name: Copy Allure branding files
-        if: always()
-        shell: bash
-        run: |
-          mkdir -p reports/allure-results
-          for f in \
-            reports/allure-results/environment.properties \
-            reports/allure-results/categories.json \
-            reports/allure-results/custom.css; do
-            if [ -f "$f" ]; then
-              cp "$f" reports/allure-results/
-            fi
-          done
-
       - name: Install Allure CLI 2.27.0
         if: always()
         run: |
