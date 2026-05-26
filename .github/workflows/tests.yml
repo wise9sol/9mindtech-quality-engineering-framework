@@ -72,7 +72,7 @@ jobs:
           allure generate reports/allure-results --clean -o reports/allure-report
       - name: Upload smoke reports
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: smoke-reports
           path: |
@@ -119,7 +119,7 @@ jobs:
           allure generate reports/allure-results --clean -o reports/allure-report
       - name: Upload API reports
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: api-reports
           path: |
@@ -171,7 +171,7 @@ jobs:
           allure generate reports/allure-results --clean -o reports/allure-report
       - name: Upload cross-browser reports
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: cross-browser-${{ matrix.browser }}-reports
           path: |
@@ -224,7 +224,7 @@ jobs:
           allure generate reports/allure-results --clean -o reports/allure-report
       - name: Upload regression reports
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: regression-reports
           path: |
@@ -333,7 +333,7 @@ jobs:
 
       - name: Upload NIST report artifact
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: nist-validation-report
           path: reports/allure-nist-report/
