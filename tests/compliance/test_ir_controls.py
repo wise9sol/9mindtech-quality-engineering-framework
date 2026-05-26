@@ -1,13 +1,9 @@
 # © 2026 Wise 9 Mind Solutions LLC. All rights reserved.
 """NIST 800-53 Incident Response compliance tests — IR-5, IR-6."""
 
-import os
-
 import allure
 import pytest
 import requests
-
-API_BASE = os.getenv("API_BASE_URL", "https://jsonplaceholder.typicode.com")
 
 
 # ── IR-5: Incident Monitoring ─────────────────────────────────────────────────
@@ -24,13 +20,13 @@ API_BASE = os.getenv("API_BASE_URL", "https://jsonplaceholder.typicode.com")
 )
 @pytest.mark.compliance
 @pytest.mark.nist_ir5
-def test_ir5_burst_requests_handled_consistently() -> None:
+def test_ir5_burst_requests_handled_consistently(api_base_url: str) -> None:
     burst_count = 10
 
     with allure.step(f"Send {burst_count} rapid successive GET requests"):
         statuses = []
         for i in range(burst_count):
-            resp = requests.get(f"{API_BASE}/posts/1", timeout=10)
+            resp = requests.get(f"{api_base_url}/posts/1", timeout=10)
             statuses.append(resp.status_code)
 
     with allure.step("Assert all responses have the same status code"):
@@ -67,10 +63,10 @@ def test_ir5_burst_requests_handled_consistently() -> None:
 )
 @pytest.mark.compliance
 @pytest.mark.nist_ir5
-def test_ir5_malformed_content_type_handled_gracefully() -> None:
+def test_ir5_malformed_content_type_handled_gracefully(api_base_url: str) -> None:
     with allure.step("Send POST with an unexpected Content-Type header"):
         response = requests.post(
-            f"{API_BASE}/posts",
+            f"{api_base_url}/posts",
             data="this is not json",
             headers={"Content-Type": "application/x-custom-anomaly"},
             timeout=10,
@@ -99,9 +95,9 @@ def test_ir5_malformed_content_type_handled_gracefully() -> None:
 )
 @pytest.mark.compliance
 @pytest.mark.nist_ir5
-def test_ir5_unsupported_http_method_returns_client_error() -> None:
+def test_ir5_unsupported_http_method_returns_client_error(api_base_url: str) -> None:
     with allure.step("Send a TRACE request to a known resource"):
-        response = requests.request("TRACE", f"{API_BASE}/posts/1", timeout=10)
+        response = requests.request("TRACE", f"{api_base_url}/posts/1", timeout=10)
 
     with allure.step("Assert a 4xx or 2xx response — never 5xx"):
         if response.status_code >= 500:
@@ -129,9 +125,9 @@ def test_ir5_unsupported_http_method_returns_client_error() -> None:
 )
 @pytest.mark.compliance
 @pytest.mark.nist_ir6
-def test_ir6_404_response_contains_reportable_information() -> None:
+def test_ir6_404_response_contains_reportable_information(api_base_url: str) -> None:
     with allure.step("Request a non-existent resource"):
-        response = requests.get(f"{API_BASE}/posts/99999", timeout=10)
+        response = requests.get(f"{api_base_url}/posts/99999", timeout=10)
 
     with allure.step("Assert 404 status code is present"):
         assert (
@@ -156,11 +152,11 @@ def test_ir6_404_response_contains_reportable_information() -> None:
 )
 @pytest.mark.compliance
 @pytest.mark.nist_ir6
-def test_ir6_error_responses_have_consistent_format() -> None:
+def test_ir6_error_responses_have_consistent_format(api_base_url: str) -> None:
     missing_ids = [99998, 99999]
 
     with allure.step("Send requests to two different non-existent resources"):
-        responses = [requests.get(f"{API_BASE}/posts/{rid}", timeout=10) for rid in missing_ids]
+        responses = [requests.get(f"{api_base_url}/posts/{rid}", timeout=10) for rid in missing_ids]
 
     with allure.step("Assert both return the same 404 status code"):
         statuses = [r.status_code for r in responses]
@@ -185,9 +181,9 @@ def test_ir6_error_responses_have_consistent_format() -> None:
 )
 @pytest.mark.compliance
 @pytest.mark.nist_ir6
-def test_ir6_successful_response_includes_identifiable_metadata() -> None:
+def test_ir6_successful_response_includes_identifiable_metadata(api_base_url: str) -> None:
     with allure.step("Fetch a known resource"):
-        response = requests.get(f"{API_BASE}/posts/1", timeout=10)
+        response = requests.get(f"{api_base_url}/posts/1", timeout=10)
         assert response.status_code == 200, f"IR-6 FAIL: expected 200, got {response.status_code}"
 
     with allure.step("Assert response contains fields needed for incident correlation"):

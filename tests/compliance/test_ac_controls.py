@@ -7,9 +7,6 @@ import allure
 import pytest
 import requests
 
-API_BASE = os.getenv("API_BASE_URL", "https://jsonplaceholder.typicode.com")
-BASE_URL = os.getenv("BASE_URL", "https://the-internet.herokuapp.com")
-
 
 # ── AC-2: Account Management ───────────────────────────────────────────────────
 
@@ -22,9 +19,9 @@ BASE_URL = os.getenv("BASE_URL", "https://the-internet.herokuapp.com")
 @allure.description("Every account record must contain id, name, email, and username.")
 @pytest.mark.compliance
 @pytest.mark.nist_ac2
-def test_ac2_account_list_exposes_expected_fields() -> None:
+def test_ac2_account_list_exposes_expected_fields(api_base_url: str) -> None:
     with allure.step("Request the user account list"):
-        response = requests.get(f"{API_BASE}/users", timeout=10)
+        response = requests.get(f"{api_base_url}/users", timeout=10)
 
     with allure.step("Assert 200 status and response time"):
         assert (
@@ -54,9 +51,9 @@ def test_ac2_account_list_exposes_expected_fields() -> None:
 @allure.description("Duplicate account IDs indicate a broken account management control.")
 @pytest.mark.compliance
 @pytest.mark.nist_ac2
-def test_ac2_account_ids_are_unique() -> None:
+def test_ac2_account_ids_are_unique(api_base_url: str) -> None:
     with allure.step("Fetch all user accounts"):
-        response = requests.get(f"{API_BASE}/users", timeout=10)
+        response = requests.get(f"{api_base_url}/users", timeout=10)
         assert response.status_code == 200, f"AC-2 FAIL: expected 200, got {response.status_code}"
 
     with allure.step("Extract and deduplicate account IDs"):
@@ -82,9 +79,9 @@ def test_ac2_account_ids_are_unique() -> None:
 @allure.description("Account records without an organisation cannot be audited for access scope.")
 @pytest.mark.compliance
 @pytest.mark.nist_ac2
-def test_ac2_accounts_linked_to_organisation() -> None:
+def test_ac2_accounts_linked_to_organisation(api_base_url: str) -> None:
     with allure.step("Fetch all user accounts"):
-        response = requests.get(f"{API_BASE}/users", timeout=10)
+        response = requests.get(f"{api_base_url}/users", timeout=10)
         assert response.status_code == 200, f"AC-2 FAIL: expected 200, got {response.status_code}"
 
     with allure.step("Assert every account contains a company field"):
@@ -109,9 +106,9 @@ def test_ac2_accounts_linked_to_organisation() -> None:
 @allure.description("API responses must not leak passwords, secrets, or private keys.")
 @pytest.mark.compliance
 @pytest.mark.nist_ac3
-def test_ac3_response_does_not_expose_sensitive_keywords() -> None:
+def test_ac3_response_does_not_expose_sensitive_keywords(api_base_url: str) -> None:
     with allure.step("Send request to user resource"):
-        response = requests.get(f"{API_BASE}/users/1", timeout=10)
+        response = requests.get(f"{api_base_url}/users/1", timeout=10)
         assert response.status_code == 200, f"AC-3 FAIL: expected 200, got {response.status_code}"
 
     with allure.step("Scan response body for sensitive keywords"):
@@ -134,9 +131,9 @@ def test_ac3_response_does_not_expose_sensitive_keywords() -> None:
 @allure.description("Out-of-range resource IDs must return 404, not internal data.")
 @pytest.mark.compliance
 @pytest.mark.nist_ac3
-def test_ac3_nonexistent_resource_returns_404() -> None:
+def test_ac3_nonexistent_resource_returns_404(api_base_url: str) -> None:
     with allure.step("Request a resource with an out-of-range ID"):
-        response = requests.get(f"{API_BASE}/users/99999", timeout=10)
+        response = requests.get(f"{api_base_url}/users/99999", timeout=10)
 
     with allure.step("Assert 404 status"):
         if response.status_code != 404:
@@ -158,11 +155,11 @@ def test_ac3_nonexistent_resource_returns_404() -> None:
 @allure.description("A userId filter must return only posts belonging to that user.")
 @pytest.mark.compliance
 @pytest.mark.nist_ac3
-def test_ac3_query_filter_restricts_results_to_authorised_records() -> None:
+def test_ac3_query_filter_restricts_results_to_authorised_records(api_base_url: str) -> None:
     target_user_id = 1
 
     with allure.step(f"Fetch posts filtered to userId={target_user_id}"):
-        response = requests.get(f"{API_BASE}/posts", params={"userId": target_user_id}, timeout=10)
+        response = requests.get(f"{api_base_url}/posts", params={"userId": target_user_id}, timeout=10)
         assert response.status_code == 200, f"AC-3 FAIL: expected 200, got {response.status_code}"
 
     with allure.step("Assert all returned records belong to the requested user"):
@@ -234,11 +231,11 @@ def test_ac17_base_url_uses_https() -> None:
 @allure.description("Remote connections must respond within 2000ms to ensure availability.")
 @pytest.mark.compliance
 @pytest.mark.nist_ac17
-def test_ac17_remote_api_responds_within_latency_threshold() -> None:
+def test_ac17_remote_api_responds_within_latency_threshold(api_base_url: str) -> None:
     threshold_ms = 2000
 
     with allure.step("Send remote request and capture elapsed time"):
-        response = requests.get(f"{API_BASE}/users/1", timeout=10)
+        response = requests.get(f"{api_base_url}/users/1", timeout=10)
         elapsed_ms = response.elapsed.total_seconds() * 1000
 
     with allure.step(f"Assert response time < {threshold_ms}ms"):

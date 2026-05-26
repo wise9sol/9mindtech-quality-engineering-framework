@@ -8,9 +8,6 @@ import allure
 import pytest
 import requests
 
-API_BASE = os.getenv("API_BASE_URL", "https://jsonplaceholder.typicode.com")
-BASE_URL = os.getenv("BASE_URL", "https://the-internet.herokuapp.com")
-
 
 # ── SC-8: Transmission Confidentiality and Integrity ──────────────────────────
 
@@ -47,10 +44,10 @@ def test_sc8_api_base_url_uses_https() -> None:
 @allure.description("A successful TLS handshake with verify=True confirms valid certificate chain.")
 @pytest.mark.compliance
 @pytest.mark.nist_sc8
-def test_sc8_tls_handshake_succeeds_with_strict_verification() -> None:
+def test_sc8_tls_handshake_succeeds_with_strict_verification(api_base_url: str) -> None:
     with allure.step("Send HTTPS request with TLS certificate verification enabled"):
         try:
-            response = requests.get(f"{API_BASE}/posts/1", verify=True, timeout=10)
+            response = requests.get(f"{api_base_url}/posts/1", verify=True, timeout=10)
         except requests.exceptions.SSLError as exc:
             allure.attach(
                 str(exc),
@@ -71,9 +68,9 @@ def test_sc8_tls_handshake_succeeds_with_strict_verification() -> None:
 @allure.description("The final URL after any redirects must still use the https scheme.")
 @pytest.mark.compliance
 @pytest.mark.nist_sc8
-def test_sc8_effective_url_remains_https_after_any_redirects() -> None:
+def test_sc8_effective_url_remains_https_after_any_redirects(api_base_url: str) -> None:
     with allure.step("Send request and capture effective URL"):
-        response = requests.get(f"{API_BASE}/posts/1", timeout=10)
+        response = requests.get(f"{api_base_url}/posts/1", timeout=10)
         effective_url = response.url
 
     with allure.step("Assert the effective URL after redirects is still HTTPS"):
@@ -99,11 +96,11 @@ def test_sc8_effective_url_remains_https_after_any_redirects() -> None:
 @allure.description("Plaintext passwords in API responses indicate data-at-rest protection failure.")
 @pytest.mark.compliance
 @pytest.mark.nist_sc28
-def test_sc28_response_does_not_contain_plaintext_credentials() -> None:
+def test_sc28_response_does_not_contain_plaintext_credentials(api_base_url: str) -> None:
     credential_pattern = re.compile(r'(password|passwd|pwd)\s*[=:]\s*["\']?[^\s"\']{4,}', re.IGNORECASE)
 
     with allure.step("Fetch user list and scan for plaintext credential patterns"):
-        response = requests.get(f"{API_BASE}/users", timeout=10)
+        response = requests.get(f"{api_base_url}/users", timeout=10)
         assert response.status_code == 200, f"SC-28 FAIL: expected 200, got {response.status_code}"
 
     with allure.step("Assert no plaintext credential pattern is present in the response"):
@@ -125,13 +122,13 @@ def test_sc28_response_does_not_contain_plaintext_credentials() -> None:
 @allure.description("PCI-DSS and SC-28 both prohibit unmasked credit card numbers in API responses.")
 @pytest.mark.compliance
 @pytest.mark.nist_sc28
-def test_sc28_response_does_not_contain_credit_card_patterns() -> None:
+def test_sc28_response_does_not_contain_credit_card_patterns(api_base_url: str) -> None:
     cc_pattern = re.compile(r"\b(?:\d[ -]?){13,16}\b")
 
     with allure.step("Fetch user and post data and scan for credit card patterns"):
         responses = [
-            requests.get(f"{API_BASE}/users", timeout=10),
-            requests.get(f"{API_BASE}/posts", timeout=10),
+            requests.get(f"{api_base_url}/users", timeout=10),
+            requests.get(f"{api_base_url}/posts", timeout=10),
         ]
 
     with allure.step("Assert no credit card pattern appears in any response"):
@@ -154,11 +151,11 @@ def test_sc28_response_does_not_contain_credit_card_patterns() -> None:
 @allure.description("SSNs in API responses indicate a failure to protect PII at rest.")
 @pytest.mark.compliance
 @pytest.mark.nist_sc28
-def test_sc28_response_does_not_contain_ssn_patterns() -> None:
+def test_sc28_response_does_not_contain_ssn_patterns(api_base_url: str) -> None:
     ssn_pattern = re.compile(r"\b\d{3}-\d{2}-\d{4}\b")
 
     with allure.step("Fetch user data and scan for SSN patterns"):
-        response = requests.get(f"{API_BASE}/users", timeout=10)
+        response = requests.get(f"{api_base_url}/users", timeout=10)
         assert response.status_code == 200, f"SC-28 FAIL: expected 200, got {response.status_code}"
 
     with allure.step("Assert no SSN pattern is present in the response body"):
@@ -183,12 +180,12 @@ def test_sc28_response_does_not_contain_ssn_patterns() -> None:
 @allure.description("Malformed auth tokens must not cause 5xx errors or expose internal details.")
 @pytest.mark.compliance
 @pytest.mark.nist_ia2
-def test_ia2_malformed_auth_header_handled_safely() -> None:
+def test_ia2_malformed_auth_header_handled_safely(api_base_url: str) -> None:
     bad_token = "Bearer INVALID.TOKEN.VALUE"
 
     with allure.step("Send request with a malformed Authorization header"):
         response = requests.get(
-            f"{API_BASE}/posts/1",
+            f"{api_base_url}/posts/1",
             headers={"Authorization": bad_token},
             timeout=10,
         )
@@ -213,7 +210,7 @@ def test_ia2_malformed_auth_header_handled_safely() -> None:
 @allure.description("Five consecutive bad-token requests must not trigger a 5xx or leak internals.")
 @pytest.mark.compliance
 @pytest.mark.nist_ia2
-def test_ia2_repeated_auth_failures_do_not_expose_internals() -> None:
+def test_ia2_repeated_auth_failures_do_not_expose_internals(api_base_url: str) -> None:
     bad_tokens = [
         "Bearer eyJinvalid1",
         "Bearer eyJinvalid2",
@@ -226,7 +223,7 @@ def test_ia2_repeated_auth_failures_do_not_expose_internals() -> None:
         statuses = []
         for token in bad_tokens:
             resp = requests.get(
-                f"{API_BASE}/posts/1",
+                f"{api_base_url}/posts/1",
                 headers={"Authorization": token},
                 timeout=10,
             )
@@ -253,10 +250,10 @@ def test_ia2_repeated_auth_failures_do_not_expose_internals() -> None:
 @allure.description("An empty auth header must return a safe client-error status, not a server error.")
 @pytest.mark.compliance
 @pytest.mark.nist_ia2
-def test_ia2_empty_auth_header_does_not_crash_server() -> None:
+def test_ia2_empty_auth_header_does_not_crash_server(api_base_url: str) -> None:
     with allure.step("Send request with an empty Authorization header value"):
         response = requests.get(
-            f"{API_BASE}/posts/1",
+            f"{api_base_url}/posts/1",
             headers={"Authorization": ""},
             timeout=10,
         )
@@ -332,7 +329,7 @@ def test_ia5_api_key_meets_minimum_length() -> None:
 @allure.description("An API key present in a response body indicates a credential leak in transit.")
 @pytest.mark.compliance
 @pytest.mark.nist_ia5
-def test_ia5_api_key_not_present_in_response_body() -> None:
+def test_ia5_api_key_not_present_in_response_body(api_base_url: str) -> None:
     with allure.step("Read ANTHROPIC_API_KEY from environment"):
         key = os.getenv("ANTHROPIC_API_KEY", "")
         if not key:
@@ -341,7 +338,7 @@ def test_ia5_api_key_not_present_in_response_body() -> None:
     with allure.step("Fetch several API resources"):
         endpoints = ["/posts/1", "/users/1", "/comments/1"]
         for path in endpoints:
-            resp = requests.get(f"{API_BASE}{path}", timeout=10)
+            resp = requests.get(f"{api_base_url}{path}", timeout=10)
 
             with allure.step(f"Scan {path} response for API key"):
                 if key in resp.text:

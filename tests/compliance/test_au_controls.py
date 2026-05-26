@@ -1,13 +1,9 @@
 # © 2026 Wise 9 Mind Solutions LLC. All rights reserved.
 """NIST 800-53 Audit and Accountability compliance tests — AU-2, AU-9, AU-12."""
 
-import os
-
 import allure
 import pytest
 import requests
-
-API_BASE = os.getenv("API_BASE_URL", "https://jsonplaceholder.typicode.com")
 
 
 # ── AU-2: Event Logging ────────────────────────────────────────────────────────
@@ -21,9 +17,9 @@ API_BASE = os.getenv("API_BASE_URL", "https://jsonplaceholder.typicode.com")
 @allure.description("A successful GET must return a response body with an identifiable record ID.")
 @pytest.mark.compliance
 @pytest.mark.nist_au2
-def test_au2_successful_fetch_produces_traceable_response() -> None:
+def test_au2_successful_fetch_produces_traceable_response(api_base_url: str) -> None:
     with allure.step("Send GET request for a known resource"):
-        response = requests.get(f"{API_BASE}/posts/1", timeout=10)
+        response = requests.get(f"{api_base_url}/posts/1", timeout=10)
 
     with allure.step("Assert 200 and response time"):
         assert (
@@ -52,11 +48,11 @@ def test_au2_successful_fetch_produces_traceable_response() -> None:
 @allure.description("POST must return a 201 with an assigned ID so the creation event is auditable.")
 @pytest.mark.compliance
 @pytest.mark.nist_au2
-def test_au2_create_event_produces_auditable_record() -> None:
+def test_au2_create_event_produces_auditable_record(api_base_url: str) -> None:
     payload = {"title": "AU-2 audit test", "body": "event logging validation", "userId": 1}
 
     with allure.step("Submit POST request to create a record"):
-        response = requests.post(f"{API_BASE}/posts", json=payload, timeout=10)
+        response = requests.post(f"{api_base_url}/posts", json=payload, timeout=10)
 
     with allure.step("Assert 201 status"):
         assert response.status_code == 201, f"AU-2 FAIL: create event must return 201, got {response.status_code}"
@@ -81,9 +77,9 @@ def test_au2_create_event_produces_auditable_record() -> None:
 @allure.description("Error responses must be structured so failures can be captured in an audit log.")
 @pytest.mark.compliance
 @pytest.mark.nist_au2
-def test_au2_failed_request_returns_loggable_error() -> None:
+def test_au2_failed_request_returns_loggable_error(api_base_url: str) -> None:
     with allure.step("Request a non-existent resource"):
-        response = requests.get(f"{API_BASE}/posts/99999", timeout=10)
+        response = requests.get(f"{api_base_url}/posts/99999", timeout=10)
 
     with allure.step("Assert 404 status code is returned"):
         assert response.status_code == 404, (
@@ -105,11 +101,11 @@ def test_au2_failed_request_returns_loggable_error() -> None:
 @allure.description("PUT requests must not silently overwrite audit-critical fields with invalid data.")
 @pytest.mark.compliance
 @pytest.mark.nist_au9
-def test_au9_audit_records_cannot_be_overwritten_arbitrarily() -> None:
+def test_au9_audit_records_cannot_be_overwritten_arbitrarily(api_base_url: str) -> None:
     payload = {"id": 1, "title": "overwrite attempt", "body": "AU-9 test", "userId": 1}
 
     with allure.step("Attempt to overwrite record with PUT"):
-        response = requests.put(f"{API_BASE}/posts/1", json=payload, timeout=10)
+        response = requests.put(f"{api_base_url}/posts/1", json=payload, timeout=10)
 
     with allure.step("Assert server responds with 2xx and not 5xx"):
         if response.status_code >= 500:
@@ -133,9 +129,9 @@ def test_au9_audit_records_cannot_be_overwritten_arbitrarily() -> None:
 @allure.description("The record list must return a bounded, finite set to prevent bulk audit export.")
 @pytest.mark.compliance
 @pytest.mark.nist_au9
-def test_au9_audit_record_list_is_bounded() -> None:
+def test_au9_audit_record_list_is_bounded(api_base_url: str) -> None:
     with allure.step("Fetch the full post list"):
-        response = requests.get(f"{API_BASE}/posts", timeout=10)
+        response = requests.get(f"{api_base_url}/posts", timeout=10)
         assert response.status_code == 200, f"AU-9 FAIL: expected 200, got {response.status_code}"
 
     with allure.step("Assert the list has a finite, non-zero length"):
@@ -152,9 +148,9 @@ def test_au9_audit_record_list_is_bounded() -> None:
 @allure.description("Invalid record IDs undermine the integrity of the audit trail.")
 @pytest.mark.compliance
 @pytest.mark.nist_au9
-def test_au9_audit_record_ids_are_valid_positive_integers() -> None:
+def test_au9_audit_record_ids_are_valid_positive_integers(api_base_url: str) -> None:
     with allure.step("Fetch posts and extract IDs"):
-        response = requests.get(f"{API_BASE}/posts", timeout=10)
+        response = requests.get(f"{api_base_url}/posts", timeout=10)
         assert response.status_code == 200, f"AU-9 FAIL: expected 200, got {response.status_code}"
 
     with allure.step("Assert every record ID is a positive integer"):
@@ -181,11 +177,11 @@ def test_au9_audit_record_ids_are_valid_positive_integers() -> None:
 @allure.description("Each created record must receive a unique system-assigned ID for audit generation.")
 @pytest.mark.compliance
 @pytest.mark.nist_au12
-def test_au12_post_generates_record_with_assigned_id() -> None:
+def test_au12_post_generates_record_with_assigned_id(api_base_url: str) -> None:
     payload = {"title": "AU-12 test", "body": "audit record generation", "userId": 1}
 
     with allure.step("Submit POST to create a new record"):
-        response = requests.post(f"{API_BASE}/posts", json=payload, timeout=10)
+        response = requests.post(f"{api_base_url}/posts", json=payload, timeout=10)
 
     with allure.step("Assert 201 and system-assigned ID"):
         assert response.status_code == 201, f"AU-12 FAIL: record generation must return 201, got {response.status_code}"
@@ -207,9 +203,9 @@ def test_au12_post_generates_record_with_assigned_id() -> None:
 @allure.description("An audit record must carry userId, id, title, and body to be complete.")
 @pytest.mark.compliance
 @pytest.mark.nist_au12
-def test_au12_generated_record_contains_required_audit_fields() -> None:
+def test_au12_generated_record_contains_required_audit_fields(api_base_url: str) -> None:
     with allure.step("Fetch a known record to verify its audit fields"):
-        response = requests.get(f"{API_BASE}/posts/1", timeout=10)
+        response = requests.get(f"{api_base_url}/posts/1", timeout=10)
         assert response.status_code == 200, f"AU-12 FAIL: expected 200, got {response.status_code}"
 
     with allure.step("Assert all required audit fields are present"):
@@ -233,9 +229,9 @@ def test_au12_generated_record_contains_required_audit_fields() -> None:
 @allure.description("A deletion event must return 200 so it can be captured in the audit log.")
 @pytest.mark.compliance
 @pytest.mark.nist_au12
-def test_au12_delete_returns_audit_compatible_status() -> None:
+def test_au12_delete_returns_audit_compatible_status(api_base_url: str) -> None:
     with allure.step("Send DELETE request for record id=1"):
-        response = requests.delete(f"{API_BASE}/posts/1", timeout=10)
+        response = requests.delete(f"{api_base_url}/posts/1", timeout=10)
 
     with allure.step("Assert 200 status for audit-compatible deletion event"):
         if response.status_code != 200:

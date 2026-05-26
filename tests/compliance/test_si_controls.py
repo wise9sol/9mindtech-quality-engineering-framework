@@ -1,14 +1,11 @@
 # © 2026 Wise 9 Mind Solutions LLC. All rights reserved.
 """NIST 800-53 System and Information Integrity tests — SI-2, SI-10, SI-12."""
 
-import os
 import re
 
 import allure
 import pytest
 import requests
-
-API_BASE = os.getenv("API_BASE_URL", "https://jsonplaceholder.typicode.com")
 
 
 # ── SI-2: Flaw Remediation ─────────────────────────────────────────────────────
@@ -22,9 +19,9 @@ API_BASE = os.getenv("API_BASE_URL", "https://jsonplaceholder.typicode.com")
 @allure.description("Server version disclosure enables targeted exploitation of known CVEs.")
 @pytest.mark.compliance
 @pytest.mark.nist_si2
-def test_si2_server_header_does_not_expose_version() -> None:
+def test_si2_server_header_does_not_expose_version(api_base_url: str) -> None:
     with allure.step("Send GET request and inspect response headers"):
-        response = requests.get(f"{API_BASE}/posts/1", timeout=10)
+        response = requests.get(f"{api_base_url}/posts/1", timeout=10)
         assert response.status_code == 200, f"SI-2 FAIL: expected 200, got {response.status_code}"
 
     with allure.step("Assert Server header does not contain a version string"):
@@ -49,9 +46,9 @@ def test_si2_server_header_does_not_expose_version() -> None:
 @allure.description("Error responses must not expose implementation details exploitable by attackers.")
 @pytest.mark.compliance
 @pytest.mark.nist_si2
-def test_si2_404_does_not_leak_stack_traces() -> None:
+def test_si2_404_does_not_leak_stack_traces(api_base_url: str) -> None:
     with allure.step("Request a non-existent endpoint"):
-        response = requests.get(f"{API_BASE}/posts/99999", timeout=10)
+        response = requests.get(f"{api_base_url}/posts/99999", timeout=10)
         assert response.status_code == 404, f"SI-2 FAIL: expected 404, got {response.status_code}"
 
     with allure.step("Assert response body contains no stack trace indicators"):
@@ -75,9 +72,9 @@ def test_si2_404_does_not_leak_stack_traces() -> None:
 @allure.description("Missing Content-Type enables MIME-sniffing attacks indicating unpatched behaviour.")
 @pytest.mark.compliance
 @pytest.mark.nist_si2
-def test_si2_response_includes_content_type_header() -> None:
+def test_si2_response_includes_content_type_header(api_base_url: str) -> None:
     with allure.step("Send GET request"):
-        response = requests.get(f"{API_BASE}/posts/1", timeout=10)
+        response = requests.get(f"{api_base_url}/posts/1", timeout=10)
         assert response.status_code == 200, f"SI-2 FAIL: expected 200, got {response.status_code}"
 
     with allure.step("Assert Content-Type header is present and specifies JSON"):
@@ -133,14 +130,14 @@ def test_si2_response_includes_content_type_header() -> None:
 )
 @pytest.mark.compliance
 @pytest.mark.nist_si10
-def test_si10_api_handles_malicious_input_safely(label: str, payload: dict) -> None:
+def test_si10_api_handles_malicious_input_safely(label: str, payload: dict, api_base_url: str) -> None:
     with allure.step(f"Submit POST with malicious payload: {label}"):
         allure.attach(
             str(payload),
             name=f"SI-10 Payload ({label})",
             attachment_type=allure.attachment_type.TEXT,
         )
-        response = requests.post(f"{API_BASE}/posts", json=payload, timeout=10)
+        response = requests.post(f"{api_base_url}/posts", json=payload, timeout=10)
 
     with allure.step("Assert server does not return a 5xx error"):
         if response.status_code >= 500:
@@ -170,9 +167,9 @@ def test_si10_api_handles_malicious_input_safely(label: str, payload: dict) -> N
 @allure.description("A deletion must return a 2xx status confirming the retention policy was applied.")
 @pytest.mark.compliance
 @pytest.mark.nist_si12
-def test_si12_delete_returns_appropriate_status() -> None:
+def test_si12_delete_returns_appropriate_status(api_base_url: str) -> None:
     with allure.step("Send DELETE for record id=1"):
-        response = requests.delete(f"{API_BASE}/posts/1", timeout=10)
+        response = requests.delete(f"{api_base_url}/posts/1", timeout=10)
 
     with allure.step("Assert 2xx status confirming deletion was processed"):
         if not (200 <= response.status_code < 300):
@@ -194,9 +191,9 @@ def test_si12_delete_returns_appropriate_status() -> None:
 @allure.description("Responses must not expose internal retention metadata such as raw timestamps or checksums.")
 @pytest.mark.compliance
 @pytest.mark.nist_si12
-def test_si12_response_does_not_include_unexpected_sensitive_fields() -> None:
+def test_si12_response_does_not_include_unexpected_sensitive_fields(api_base_url: str) -> None:
     with allure.step("Fetch a single record"):
-        response = requests.get(f"{API_BASE}/posts/1", timeout=10)
+        response = requests.get(f"{api_base_url}/posts/1", timeout=10)
         assert response.status_code == 200, f"SI-12 FAIL: expected 200, got {response.status_code}"
 
     with allure.step("Assert no unexpected internal fields are present"):
@@ -220,9 +217,9 @@ def test_si12_response_does_not_include_unexpected_sensitive_fields() -> None:
 @allure.description("An unbounded list response violates information retention scoping requirements.")
 @pytest.mark.compliance
 @pytest.mark.nist_si12
-def test_si12_record_list_is_bounded() -> None:
+def test_si12_record_list_is_bounded(api_base_url: str) -> None:
     with allure.step("Fetch the full post list"):
-        response = requests.get(f"{API_BASE}/posts", timeout=10)
+        response = requests.get(f"{api_base_url}/posts", timeout=10)
         assert response.status_code == 200, f"SI-12 FAIL: expected 200, got {response.status_code}"
 
     with allure.step("Assert the list contains a finite, positive number of records"):
