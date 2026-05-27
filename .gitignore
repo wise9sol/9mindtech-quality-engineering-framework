@@ -173,3 +173,10 @@ ai_test_output.txt
 *.bak
 ss_*.png
 website_screenshot.png
+
+# Claude Code local config
+.claude/settings.local.json
+
+# Test artifacts
+*.backup
+verify_hero.png
