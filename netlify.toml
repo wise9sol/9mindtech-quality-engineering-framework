@@ -1,3 +1,5 @@
-# Serve the landing page from repo root
+# Deployed via GitHub Actions — disable Netlify git integration
 [build]
-  publish = "."
+  publish = "dist"
+  command = ""
+  ignore = "exit 0"
