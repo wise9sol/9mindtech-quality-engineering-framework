@@ -237,6 +237,7 @@
     <div class="container">
         <div class="footer-links">
             <div style="max-width:400px;">
+                <img id="footer-logo-img" alt="9MindTech" style="height:48px;width:48px;object-fit:contain;border-radius:10px;background:#0b1120;display:block;margin-bottom:12px;">
                 <p style="font-weight:600; font-size:1.2rem; margin-bottom:8px;">9mindtech</p>
                 <p style="color:#4a5568; font-size:0.95rem; font-style:italic;">"The bugs we ignore today become the failures that hold the world back tomorrow."</p>
             </div>
@@ -263,7 +264,9 @@
 (function(){
   var hero = document.querySelector('img[alt="9MindTech Logo"]');
   var nav  = document.getElementById('nav-logo-img');
+  var footer = document.getElementById('footer-logo-img');
   if(hero && nav){ nav.src = hero.src; }
+  if(hero && footer){ footer.src = hero.src; }
 })();
 </script>
 </body>
