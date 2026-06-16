@@ -26,7 +26,7 @@
         .btn-primary:hover { background-color: #1d4ed8; }
         .btn-outline { background: transparent; color: white; padding: 14px 32px; border-radius: 60px; font-weight: 600; border: 2px solid rgba(255,255,255,0.3); text-decoration: none; display: inline-block; transition: border 0.2s ease; }
         .btn-outline:hover { border-color: white; }
-        .hero { padding: 40px 0 60px 0; background: linear-gradient(145deg, #f8faff 0%, #ffffff 100%); }
+        .hero { padding: 104px 0 60px 0; background: linear-gradient(145deg, #f8faff 0%, #ffffff 100%); }
         .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
         .hero-visual { background: #0b1120; border-radius: 24px; padding: 32px; color: #b0c7e7; font-family: 'Courier New', monospace; box-shadow: 0 20px 60px rgba(0,0,0,0.12); }
         .hero-visual .pass { color: #22c55e; font-weight: 700; }
@@ -55,9 +55,32 @@
             .grid-3 { grid-template-columns: 1fr; }
             section { padding: 50px 0; }
         }
-    </style>
+        /* NAV */
+        .navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: rgba(255,255,255,0.95); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0,0,0,0.07); height: 64px; display: flex; align-items: center; }
+        .navbar .container { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+        .nav-brand { font-weight: 800; font-size: 1.2rem; color: #0b1120; text-decoration: none; letter-spacing: -0.02em; }
+        .nav-brand span { color: #2563eb; }
+        .nav-links { display: flex; align-items: center; gap: 2rem; list-style: none; }
+        .nav-links a { color: #4a5568; text-decoration: none; font-size: 0.95rem; font-weight: 500; transition: color 0.2s; }
+        .nav-links a:hover { color: #2563eb; }
+        .nav-cta { background: #2563eb; color: white !important; padding: 10px 24px; border-radius: 60px; font-weight: 600 !important; font-size: 0.9rem !important; transition: background 0.2s !important; }
+        .nav-cta:hover { background: #1d4ed8 !important; color: white !important; }
+        @media (max-width: 768px) { .nav-links { display: none; } }    </style>
 </head>
 <body>
+<nav class="navbar">
+    <div class="container">
+        <a href="#" class="nav-brand">9mind<span>tech</span></a>
+        <ul class="nav-links">
+            <li><a href="#services">Services</a></li>
+            <li><a href="#solutions">Solutions</a></li>
+            <li><a href="#demo">Demo</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+            <li><a href="#" class="nav-cta">Start Free Trial</a></li>
+        </ul>
+    </div>
+</nav>
+
 
 <section class="hero">
     <div class="container">
