@@ -1,0 +1,10 @@
+{
+  "name": "qualiops-ai-functions",
+  "version": "1.0.0",
+  "description": "Netlify serverless functions for QualiOps AI self-service trial",
+  "private": true,
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0",
+    "bcryptjs": "^2.4.3"
+  }
+}

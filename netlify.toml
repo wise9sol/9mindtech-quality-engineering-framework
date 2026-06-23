@@ -1,5 +1,33 @@
-# Deployed via GitHub Actions — disable Netlify git integration
+# netlify.toml — place this in the root of your repo
+
 [build]
   publish = "dist"
-  command = ""
-  ignore = "exit 0"
+  command = "echo 'Static site — no build step'"
+
+[functions]
+  directory    = "netlify/functions"
+  node_bundler = "esbuild"
+
+# Redirect API calls to the functions
+[[redirects]]
+  from   = "/.netlify/functions/*"
+  to     = "/.netlify/functions/:splat"
+  status = 200
+
+# ============================================================
+# ENVIRONMENT VARIABLES — set these in the Netlify dashboard:
+# Site settings → Environment variables → Add variable
+# Never commit these values to your repo.
+# ============================================================
+#
+# SUPABASE_URL          = https://xxxxxxxxxxxx.supabase.co
+#                         (Supabase dashboard → Settings → API → Project URL)
+#
+# SUPABASE_SERVICE_KEY  = eyJhbGciOiJIUzI1NiIs...
+#                         (Supabase dashboard → Settings → API → service_role secret)
+#                         ⚠️  Service role key bypasses RLS — keep it server-side only
+#
+# ALLOWED_ORIGIN        = https://9mindtech.com
+#                         (locks CORS to your production domain)
+#
+# ============================================================
