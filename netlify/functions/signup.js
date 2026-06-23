@@ -59,9 +59,12 @@ exports.handler = async (event) => {
   }
 
   // --- Supabase client (service role — never expose this key client-side) ---
-  const supabase = createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_KEY
+ const supabaseKey = process.env.SUPABASE_SERVICE_KEY || 'KEY_NOT_FOUND';
+const supabaseUrl = process.env.SUPABASE_URL || 'URL_NOT_FOUND';
+const supabase = createClient(supabaseUrl, supabaseKey);
+console.log('URL prefix:', supabaseUrl.slice(0, 30));
+console.log('Key prefix:', supabaseKey.slice(0, 20));
+console.log('Key suffix:', supabaseKey.slice(-10));
   );
 
   // --- Duplicate email check ---
