@@ -1,6 +1,6 @@
 [build]
   publish = "dist"
-  command = "mkdir -p dist && echo 'Static site — no build step'"
+  command = "echo 'Static site'"
 
 [functions]
   directory = "netlify/functions"
