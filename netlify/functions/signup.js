@@ -106,12 +106,12 @@ exports.handler = async (event) => {
     trial_ends_at: trialEndsAt.toISOString(),
   });
 
-  if (insertError) {
+ if (insertError) {
     console.error("Supabase insert error:", insertError);
     return {
       statusCode: 500,
       headers: CORS_HEADERS,
-      body: JSON.stringify({ error: "Account creation failed. Please try again." }),
+      body: JSON.stringify({ error: insertError.message, code: insertError.code, details: insertError.details }),
     };
   }
 
