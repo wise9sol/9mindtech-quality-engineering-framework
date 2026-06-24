@@ -1,6 +1,8 @@
-﻿const { createClient } = require("@supabase/supabase-js");
+const { createClient } = require("@supabase/supabase-js");
 const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
+const { checkRateLimit } = require("./rate-limit");
+const { logger } = require("./logger");
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": process.env.ALLOWED_ORIGIN || "*",
@@ -15,6 +17,13 @@ exports.handler = async (event) => {
   }
   if (event.httpMethod !== "POST") {
     return { statusCode: 405, headers: CORS_HEADERS, body: JSON.stringify({ error: "Method not allowed" }) };
+  }
+
+  const ip = event.headers["x-forwarded-for"] || "unknown";
+  const { success } = await checkRateLimit(ip, "signup");
+  if (!success) {
+    logger.warn("Rate limit hit on signup", { ip });
+    return { statusCode: 429, headers: CORS_HEADERS, body: JSON.stringify({ error: "Too many requests. Try again later." }) };
   }
 
   let payload;
@@ -67,9 +76,11 @@ exports.handler = async (event) => {
   });
 
   if (insertError) {
-    console.error("Supabase insert error:", insertError);
-    return { statusCode: 500, headers: CORS_HEADERS, body: JSON.stringify({ error: insertError.message, code: insertError.code }) };
+    logger.error("Supabase insert error", insertError, { email, company });
+    return { statusCode: 500, headers: CORS_HEADERS, body: JSON.stringify({ error: "Account creation failed. Please try again." }) };
   }
+
+  logger.info("User signed up", { email, company, trialEndsAt });
 
   return {
     statusCode: 200,
