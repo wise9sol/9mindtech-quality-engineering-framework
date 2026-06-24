@@ -3,6 +3,7 @@ const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
 const { checkRateLimit } = require("./rate-limit");
 const { logger } = require("./logger");
+const { sendWelcomeEmail } = require("./email-welcome");
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": process.env.ALLOWED_ORIGIN || "*",
@@ -81,6 +82,9 @@ exports.handler = async (event) => {
   }
 
   logger.info("User signed up", { email, company, trialEndsAt });
+
+  // Send welcome email ? graceful degradation, never blocks signup
+  await sendWelcomeEmail(email, company, apiKey, trialEndsAt.toISOString());
 
   return {
     statusCode: 200,
