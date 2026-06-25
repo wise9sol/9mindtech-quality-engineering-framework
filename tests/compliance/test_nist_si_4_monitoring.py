@@ -4,12 +4,12 @@ Tests: Framework must detect anomalous behavior (failed logins, rapid requests, 
 Target: Your monitoring hooks + nist-validation-report/
 """
 
-import pytest
+import logging
 import time
-import json
-from pathlib import Path
-from collections import Counter
-from concurrent.futures import ThreadPoolExecutor
+
+import pytest
+
+logger = logging.getLogger(__name__)
 
 # NOTE: `nist_reporter` is supplied by the fixture in conftest.py, which defines
 # NISTReport as a fixture-local dataclass. There is no importable utils.nist_reporter
@@ -19,10 +19,10 @@ from concurrent.futures import ThreadPoolExecutor
 
 # Tracking: https://github.com/wise9sol/9mindtech-quality-engineering-framework/issues/2
 # These tests collect cleanly but cannot run yet — they depend on unimplemented
-# modules/fixtures (utils.traffic_monitor, utils.rate_monitor, an api_client fixture,
-# an imported logger) and a local OWASP Juice Shop at localhost:3000. xfail keeps them
-# visible without blocking CI; remove the markers once issue #2 is resolved.
-_SI4_XFAIL_REASON = "Missing deps (utils.traffic_monitor/rate_monitor, api_client fixture, logger, local Juice Shop) — see issue #2"
+# modules/fixtures (utils.traffic_monitor, utils.rate_monitor, an api_client fixture)
+# and a local OWASP Juice Shop at localhost:3000. xfail keeps them visible without
+# blocking CI; remove the markers once issue #2 is resolved.
+_SI4_XFAIL_REASON = "Missing deps (traffic_monitor/rate_monitor, api_client, Juice Shop) — see issue #2"
 
 
 @pytest.mark.xfail(reason=_SI4_XFAIL_REASON, run=False)
@@ -54,8 +54,7 @@ class TestNIST_SI4_Monitoring:
         # Your monitoring should flag this as SI-4 violation
         violations = nist_reporter.get_violations(control="SI-4", time_window_seconds=60)
 
-        assert any(v["type"] == "brute_force" for v in violations), \
-            "SI-4 did not detect brute force attempts"
+        assert any(v["type"] == "brute_force" for v in violations), "SI-4 did not detect brute force attempts"
         assert rate > 5, f"Failure rate {rate:.1f}/sec should trigger alert"
 
         nist_reporter.assert_control_passed("SI-4", "brute_force_detection")
@@ -75,7 +74,7 @@ class TestNIST_SI4_Monitoring:
             analyzer.log_request(
                 dest_ip="185.199.108.153",  # GitHub, suspiciously large
                 bytes_sent=1_000_000,
-                destination_domain="data-exfil.test.com"
+                destination_domain="data-exfil.test.com",
             )
 
         alerts = analyzer.get_alerts(type="data_exfiltration")
@@ -98,14 +97,17 @@ class TestNIST_SI4_Monitoring:
 
         # Each alert should have a matching audit entry (by timestamp + user)
         for alert in alerts:
-            matches = [a for a in audit_entries
-                       if abs(a["timestamp"] - alert["timestamp"]) < 5  # within 5 seconds
-                       and a["user_id"] == alert.get("user_id")]
+            matches = [
+                a
+                for a in audit_entries
+                if abs(a["timestamp"] - alert["timestamp"]) < 5  # within 5 seconds
+                and a["user_id"] == alert.get("user_id")
+            ]
             assert len(matches) >= 1, f"Alert {alert['id']} missing audit correlation"
 
         logger.info(f"Correlated {len(alerts)} alerts with {len(audit_entries)} audit entries")
 
-    def test_si_4_rate_based_alerting(self, api_client):
+    def test_si_4_rate_based_alerting(self, api_client, nist_reporter):
         """
         SI-4(2): Alert when request rate exceeds threshold (e.g., >100/min)
         """
@@ -123,25 +125,18 @@ class TestNIST_SI4_Monitoring:
 
         # Your NIST report should include this SI-4 violation
         nist_reporter.record_violation(
-            control="SI-4",
-            description="Rate threshold exceeded",
-            details={"actual_rate": 240, "threshold": 100}
+            control="SI-4", description="Rate threshold exceeded", details={"actual_rate": 240, "threshold": 100}
         )
 
     def _attempt_login(self, base_url, email, password):
         """Helper: real POST to Juice Shop login"""
         import requests
-        return requests.post(
-            f"{base_url}/rest/user/login",
-            json={"email": email, "password": password},
-            timeout=5
-        )
+
+        return requests.post(f"{base_url}/rest/user/login", json={"email": email, "password": password}, timeout=5)
 
     def _trigger_sql_injection_simulation(self, juice_shop_url):
         """Simulate SQLi attempt (Juice Shop is intentionally vulnerable)"""
         import requests
+
         # Known vulnerable endpoint in Juice Shop
-        requests.get(
-            f"{juice_shop_url}/rest/products/search?q=' OR 1=1--",
-            timeout=5
-        )
+        requests.get(f"{juice_shop_url}/rest/products/search?q=' OR 1=1--", timeout=5)
