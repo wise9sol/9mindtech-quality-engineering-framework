@@ -98,6 +98,8 @@ This repo is worked on by multiple AI tools. To prevent conflicting suggestions:
 │   ├── logger.py              ← Shared logger instance
 │   ├── network_config.py      ← Network test constants (import BASE_URL from utils.config)
 │   ├── artifacts.py           ← Timestamped artifact path helper
+│   ├── traffic_monitor.py     ← SI-4(4) outbound data-exfiltration analyzer
+│   ├── rate_monitor.py        ← SI-4(2) sliding-window request-rate monitor
 │   └── schemas/               ← jsonschema definitions for API response validation
 │       └── post.py
 │

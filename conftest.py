@@ -233,25 +233,46 @@ def durability_api_client_factory():
 
 
 @pytest.fixture
+def api_client() -> Generator[object, None, None]:
+    """Plain requests session for API/monitoring tests (compatible with requests-mock)."""
+    import requests
+
+    session = requests.Session()
+    yield session
+    session.close()
+
+
+@pytest.fixture
 def nist_reporter(tmp_path):
-    """NIST 800-53 compliance reporter for durability tests."""
+    """NIST 800-53 compliance reporter for SI-4 monitoring and durability tests."""
     from datetime import datetime
     from dataclasses import dataclass, field
-    from typing import List, Dict, Any
+    from typing import List, Dict, Any, Optional
     from pathlib import Path
 
     @dataclass
     class NISTReport:
         output_dir: Path
         _violations: List[Dict[str, Any]] = field(default_factory=list)
+        _audit_logs: List[Dict[str, Any]] = field(default_factory=list)
 
-        def record_violation(self, control: str, description: str, details: Dict[str, Any] = None):
+        def record_violation(
+            self,
+            control: str,
+            description: str,
+            details: Optional[Dict[str, Any]] = None,
+            type: Optional[str] = None,
+            user_id: Optional[str] = None,
+            timestamp: Optional[float] = None,
+        ) -> None:
             self._violations.append(
                 {
                     "control": control,
                     "description": description,
+                    "type": type,
+                    "user_id": user_id,
                     "details": details or {},
-                    "timestamp": datetime.now().isoformat(),
+                    "timestamp": timestamp if timestamp is not None else datetime.now().timestamp(),
                 }
             )
 
@@ -261,8 +282,22 @@ def nist_reporter(tmp_path):
                 result = [v for v in result if v["control"] == control]
             if time_window_seconds:
                 cutoff = datetime.now().timestamp() - time_window_seconds
-                result = [v for v in result if datetime.fromisoformat(v["timestamp"]).timestamp() > cutoff]
+                result = [v for v in result if v["timestamp"] > cutoff]
             return result
+
+        def record_audit_log(self, control: str, user_id: str, timestamp: Optional[float] = None) -> None:
+            self._audit_logs.append(
+                {
+                    "control": control,
+                    "user_id": user_id,
+                    "timestamp": timestamp if timestamp is not None else datetime.now().timestamp(),
+                }
+            )
+
+        def get_audit_logs(self, control: str = None) -> List[Dict]:
+            if control:
+                return [a for a in self._audit_logs if a["control"] == control]
+            return self._audit_logs
 
         def assert_control_passed(self, control: str, description: str = None):
             violations = self.get_violations(control=control)
