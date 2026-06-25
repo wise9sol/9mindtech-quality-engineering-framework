@@ -46,9 +46,19 @@ def pytest_configure(config: pytest.Config) -> None:
     config.addinivalue_line("markers", "nist_sc28: NIST 800-53 SC-28 Protection of Information at Rest")
     config.addinivalue_line("markers", "nist_ia2: NIST 800-53 IA-2 Identification and Authentication")
     config.addinivalue_line("markers", "nist_ia5: NIST 800-53 IA-5 Authenticator Management")
+    config.addinivalue_line("markers", "nist_cm2: NIST 800-53 CM-2 Baseline Configuration")
+    config.addinivalue_line("markers", "nist_cm6: NIST 800-53 CM-6 Configuration Settings")
+    config.addinivalue_line("markers", "nist_cm7: NIST 800-53 CM-7 Least Functionality")
+    config.addinivalue_line("markers", "nist_cm8: NIST 800-53 CM-8 System Component Inventory")
+    config.addinivalue_line("markers", "nist_ia3: NIST 800-53 IA-3 Device Identification and Authentication")
+    config.addinivalue_line("markers", "nist_ia4: NIST 800-53 IA-4 Identifier Management")
+    config.addinivalue_line("markers", "nist_ia8: NIST 800-53 IA-8 Non-Organisational Users")
     config.addinivalue_line("markers", "compliance: cross-cutting compliance tests")
     config.addinivalue_line("markers", "healthcare: healthcare regulatory tests")
     config.addinivalue_line("markers", "finance: finance regulatory tests")
+    config.addinivalue_line("markers", "durability: marks tests that stress framework robustness")
+    config.addinivalue_line("markers", "nist_si4: NIST 800-53 SI-4 System Monitoring")
+    config.addinivalue_line("markers", "slow: tests that take > 5 minutes")
 
 
 @pytest.fixture(scope="session")
@@ -179,3 +189,87 @@ def pytest_runtest_makereport(
                 )
 
     return report
+
+
+# ... all your existing code above ...
+
+
+# ===== DURABILITY FIXTURES =====
+
+
+@pytest.fixture(scope="session")
+def durability_api_client():
+    """Session-scoped API client with retry config for durability tests."""
+    import requests
+    from requests.adapters import HTTPAdapter
+    from urllib3.util.retry import Retry
+
+    session = requests.Session()
+    retry_strategy = Retry(
+        total=4,
+        backoff_factor=1.0,
+        status_forcelist=[429, 500, 502, 503, 504],
+        allowed_methods=["HEAD", "GET", "OPTIONS", "POST", "PUT", "DELETE"],
+    )
+    adapter = HTTPAdapter(max_retries=retry_strategy)
+    session.mount("https://", adapter)
+    session.mount("http://", adapter)
+
+    return session
+
+
+@pytest.fixture
+def durability_api_client_factory():
+    """Factory for isolated API clients (parallel durability tests)."""
+    import requests
+    import uuid
+
+    def _create():
+        session = requests.Session()
+        session.headers.update({"X-Test-Session": uuid.uuid4().hex})
+        return session
+
+    return _create
+
+
+@pytest.fixture
+def nist_reporter(tmp_path):
+    """NIST 800-53 compliance reporter for durability tests."""
+    from datetime import datetime
+    from dataclasses import dataclass, field
+    from typing import List, Dict, Any
+    from pathlib import Path
+
+    @dataclass
+    class NISTReport:
+        output_dir: Path
+        _violations: List[Dict[str, Any]] = field(default_factory=list)
+
+        def record_violation(self, control: str, description: str, details: Dict[str, Any] = None):
+            self._violations.append(
+                {
+                    "control": control,
+                    "description": description,
+                    "details": details or {},
+                    "timestamp": datetime.now().isoformat(),
+                }
+            )
+
+        def get_violations(self, control: str = None, time_window_seconds: int = None) -> List[Dict]:
+            result = self._violations
+            if control:
+                result = [v for v in result if v["control"] == control]
+            if time_window_seconds:
+                cutoff = datetime.now().timestamp() - time_window_seconds
+                result = [v for v in result if datetime.fromisoformat(v["timestamp"]).timestamp() > cutoff]
+            return result
+
+        def assert_control_passed(self, control: str, description: str = None):
+            violations = self.get_violations(control=control)
+            if description:
+                violations = [v for v in violations if description in v["description"]]
+            assert len(violations) == 0, f"NIST {control} failed: {violations}"
+
+    report_dir = tmp_path / "nist-validation-report"
+    report_dir.mkdir(exist_ok=True)
+    return NISTReport(output_dir=report_dir)

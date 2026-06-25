@@ -180,3 +180,11 @@ website_screenshot.png
 # Test artifacts
 *.backup
 verify_hero.png
+
+# Local Netlify folder
+.netlify
+
+# ── Non-framework scratch / product setup files ───────────────────────────────
+stripe-setup.py
+dns-record.json
+netlify/functions/package-lock.json
