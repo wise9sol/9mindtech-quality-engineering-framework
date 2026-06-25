@@ -84,7 +84,9 @@ This repo is worked on by multiple AI tools. To prevent conflicting suggestions:
 ├── tests/
 │   ├── ui/                    ← Playwright UI tests
 │   ├── api/                   ← requests API tests
-│   └── network/               ← Network condition tests (excluded from CI)
+│   ├── network/               ← Network condition tests (excluded from CI)
+│   ├── compliance/            ← NIST 800-53 control tests (AC/AU/IR/SC/IA/SI/...)
+│   └── durability/            ← Stability/robustness tests (memory, retries, long-running)
 │
 ├── tools/                     ← Developer CLI tools (not part of test suite)
 │   ├── nl_translator.py       ← NL-to-page-object demo (QualiOps seed)
@@ -126,7 +128,7 @@ def test_login_fails_with_invalid_password(): ...
 def test_api_returns_404_for_nonexistent_resource(): ...
 ```
 
-### Pytest Markers — use these, no others without adding to pytest.ini
+### Pytest Markers — use these, no others without registering in `conftest.py` (`pytest_configure`)
 ```python
 @pytest.mark.smoke        # Fast, critical path — always run in CI
 @pytest.mark.regression   # Full suite — run on main branch
@@ -134,6 +136,9 @@ def test_api_returns_404_for_nonexistent_resource(): ...
 @pytest.mark.ui           # Browser tests
 @pytest.mark.network      # Network condition tests — EXCLUDED from CI
 @pytest.mark.ai_generated # Tests created by the AI test generator
+@pytest.mark.compliance   # Cross-cutting compliance tests (see tests/compliance/, plus nist_* control markers)
+@pytest.mark.durability   # Stability/robustness tests (see tests/durability/)
+@pytest.mark.slow         # Tests that take > 5 minutes
 ```
 
 ### Page Object Model Rules
