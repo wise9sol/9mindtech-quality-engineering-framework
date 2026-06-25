@@ -46,9 +46,13 @@ class TestLongRunningStability:
         assert final_contexts <= initial_contexts + 1
         logger.info("Context isolation: %d -> %d", initial_contexts, final_contexts)
 
-    @pytest.mark.skip(reason="Requires live httpbin.org — external service outside our control")
-    def test_socket_cleanup(self, durability_api_client_factory) -> None:
-        """API client connections are released and do not exhaust sockets."""
+    def test_socket_cleanup(self, requests_mock, durability_api_client_factory) -> None:
+        """API clients are created, used, and closed across many iterations without error.
+
+        Uses requests-mock (no real sockets) — verifies a clean client lifecycle rather
+        than provoking real socket exhaustion against a live service.
+        """
+        requests_mock.get("https://httpbin.org/get", json={"ok": True}, status_code=200)
         clients = [durability_api_client_factory() for _ in range(5)]
 
         for client in clients:

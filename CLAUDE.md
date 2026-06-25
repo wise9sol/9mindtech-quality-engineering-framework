@@ -38,6 +38,7 @@ This repo is worked on by multiple AI tools. To prevent conflicting suggestions:
 | Test Runner        | pytest             | 8.3.5         | Config in `pytest.ini`             |
 | Browser Automation | Playwright         | 1.51.0        | Chromium primary, FF/WebKit CI     |
 | HTTP / API Testing | requests           | 2.32.3        | No httpx unless justified          |
+| HTTP Mocking       | requests-mock      | 1.12.1        | Mock HTTP in tests — no live 3rd-party services in CI |
 | AI Integration     | Anthropic SDK      | 0.49.0        | Claude Sonnet only — see `ai/`     |
 | Parallel Execution | pytest-xdist       | 3.6.1         | `-n auto` in CI regression job     |
 | Reporting          | Allure + pytest-html | 2.13.5 / 4.1.1 | Allure is primary for clients    |
