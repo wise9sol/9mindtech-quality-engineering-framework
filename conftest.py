@@ -58,6 +58,9 @@ def pytest_configure(config: pytest.Config) -> None:
     config.addinivalue_line("markers", "finance: finance regulatory tests")
     config.addinivalue_line("markers", "durability: marks tests that stress framework robustness")
     config.addinivalue_line("markers", "nist_si4: NIST 800-53 SI-4 System Monitoring")
+    config.addinivalue_line("markers", "nist_ca2: NIST 800-53 CA-2 Control Assessments")
+    config.addinivalue_line("markers", "nist_ca7: NIST 800-53 CA-7 Continuous Monitoring")
+    config.addinivalue_line("markers", "nist_ca9: NIST 800-53 CA-9 Internal System Connections")
     config.addinivalue_line("markers", "slow: tests that take > 5 minutes")
 
 
