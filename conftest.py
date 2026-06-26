@@ -65,6 +65,8 @@ def pytest_configure(config: pytest.Config) -> None:
     config.addinivalue_line("markers", "nist_cp10: NIST 800-53 CP-10 System Recovery and Reconstitution")
     config.addinivalue_line("markers", "nist_sa11: NIST 800-53 SA-11 Developer Testing and Evaluation")
     config.addinivalue_line("markers", "nist_sa15: NIST 800-53 SA-15 Development Process, Standards, and Tools")
+    config.addinivalue_line("markers", "nist_ra3: NIST 800-53 RA-3 Risk Assessment")
+    config.addinivalue_line("markers", "nist_ra5: NIST 800-53 RA-5 Vulnerability Monitoring and Scanning")
     config.addinivalue_line("markers", "slow: tests that take > 5 minutes")
 
 
