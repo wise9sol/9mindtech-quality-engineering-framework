@@ -61,6 +61,8 @@ def pytest_configure(config: pytest.Config) -> None:
     config.addinivalue_line("markers", "nist_ca2: NIST 800-53 CA-2 Control Assessments")
     config.addinivalue_line("markers", "nist_ca7: NIST 800-53 CA-7 Continuous Monitoring")
     config.addinivalue_line("markers", "nist_ca9: NIST 800-53 CA-9 Internal System Connections")
+    config.addinivalue_line("markers", "nist_cp9: NIST 800-53 CP-9 System Backup")
+    config.addinivalue_line("markers", "nist_cp10: NIST 800-53 CP-10 System Recovery and Reconstitution")
     config.addinivalue_line("markers", "slow: tests that take > 5 minutes")
 
 
