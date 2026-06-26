@@ -17,6 +17,8 @@ from utils.traffic_monitor import TrafficAnalyzer
 logger = logging.getLogger(__name__)
 
 
+@pytest.mark.compliance
+@pytest.mark.nist_si4
 class TestNIST_SI4_Monitoring:
     """SI-4: Intrusion detection, rate anomaly, audit correlation."""
 
