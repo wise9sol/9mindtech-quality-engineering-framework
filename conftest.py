@@ -71,6 +71,8 @@ def pytest_configure(config: pytest.Config) -> None:
     config.addinivalue_line("markers", "nist_ma6: NIST 800-53 MA-6 Timely Maintenance")
     config.addinivalue_line("markers", "nist_mp2: NIST 800-53 MP-2 Media Access")
     config.addinivalue_line("markers", "nist_mp6: NIST 800-53 MP-6 Media Sanitization")
+    config.addinivalue_line("markers", "nist_pe2: NIST 800-53 PE-2 Physical Access Authorizations")
+    config.addinivalue_line("markers", "nist_pe3: NIST 800-53 PE-3 Physical Access Control")
     config.addinivalue_line("markers", "slow: tests that take > 5 minutes")
 
 
