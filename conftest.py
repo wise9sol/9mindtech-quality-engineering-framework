@@ -75,6 +75,8 @@ def pytest_configure(config: pytest.Config) -> None:
     config.addinivalue_line("markers", "nist_pe3: NIST 800-53 PE-3 Physical Access Control")
     config.addinivalue_line("markers", "nist_pl2: NIST 800-53 PL-2 System Security and Privacy Plans")
     config.addinivalue_line("markers", "nist_pl4: NIST 800-53 PL-4 Rules of Behavior")
+    config.addinivalue_line("markers", "nist_pm1: NIST 800-53 PM-1 Information Security Program Plan")
+    config.addinivalue_line("markers", "nist_pm9: NIST 800-53 PM-9 Risk Management Strategy")
     config.addinivalue_line("markers", "slow: tests that take > 5 minutes")
 
 
