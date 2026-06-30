@@ -1,0 +1,119 @@
+﻿openapi: 3.0.0
+info:
+  title: QualiOps AI API
+  version: 1.0.0
+  description: QualiOps AI Netlify Functions API
+servers:
+  - url: https://qualiops-ai-staging.netlify.app
+paths:
+  /.netlify/functions/health:
+    get:
+      summary: Health check
+      operationId: health
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+
+  /.netlify/functions/signup:
+    post:
+      summary: Create a trial account
+      operationId: signup
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, company, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                company:
+                  type: string
+                password:
+                  type: string
+                  minLength: 8
+      responses:
+        "200":
+          description: Account created
+        "400":
+          description: Validation error
+        "429":
+          description: Rate limited
+        "500":
+          description: Server error
+
+  /.netlify/functions/validate-key:
+    get:
+      summary: Validate an API key
+      operationId: validateKey
+      parameters:
+        - in: header
+          name: X-API-Key
+          schema:
+            type: string
+          required: true
+      responses:
+        "200":
+          description: Valid key
+        "401":
+          description: Invalid or missing key
+        "403":
+          description: Expired or suspended
+
+  /.netlify/functions/stripe-checkout:
+    post:
+      summary: Create a Stripe checkout session
+      operationId: stripeCheckout
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [priceId]
+              properties:
+                priceId:
+                  type: string
+                email:
+                  type: string
+                  format: email
+      responses:
+        "200":
+          description: Checkout session created
+        "400":
+          description: Bad request
+        "500":
+          description: Server error
+
+  /.netlify/functions/stripe-webhook:
+    post:
+      summary: Stripe webhook receiver
+      operationId: stripeWebhook
+      parameters:
+        - in: header
+          name: stripe-signature
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: Webhook processed
+        "400":
+          description: Invalid signature
+        "500":
+          description: Server error

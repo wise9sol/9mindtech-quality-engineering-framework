@@ -1,10 +1,11 @@
-const { createClient } = require("@supabase/supabase-js");
+﻿const { createClient } = require("@supabase/supabase-js");
 const { Redis } = require("@upstash/redis");
 const { logger } = require("./logger");
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": process.env.ALLOWED_ORIGIN || "*",
   "Content-Type": "application/json",
+  "X-Content-Type-Options": "nosniff",
 };
 
 exports.handler = async () => {
@@ -46,3 +47,4 @@ exports.handler = async () => {
     }),
   };
 };
+
