@@ -36,7 +36,8 @@ def get_client() -> Anthropic:
 def extract_text(response: Message) -> str:
     """Extract the text from the first content block of a Claude response."""
     content = response.content[0]
-    assert isinstance(content, TextBlock), f"Expected TextBlock, got {type(content).__name__}"
+    if not isinstance(content, TextBlock):
+        raise TypeError(f"Expected TextBlock, got {type(content).__name__}")
     return content.text.strip()
 
 

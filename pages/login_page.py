@@ -6,7 +6,7 @@ class LoginPage(BasePage):
     """Page Object for the-internet.herokuapp.com/login."""
 
     username = "#username"
-    password = "#password"
+    password = "#password"  # nosec B105 — CSS selector, not a credential
     login_button = "button[type='submit']"
 
     def login(self, user: str, pwd: str) -> None:

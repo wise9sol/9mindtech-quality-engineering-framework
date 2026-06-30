@@ -214,9 +214,6 @@ def pytest_runtest_makereport(
     return report
 
 
-# ... all your existing code above ...
-
-
 # ===== DURABILITY FIXTURES =====
 
 
