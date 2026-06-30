@@ -1,9 +1,10 @@
-const { Resend } = require("resend");
+﻿const { Resend } = require("resend");
 const { logger } = require("./logger");
 
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 const sendWelcomeEmail = async (email, company, apiKey, trialEndsAt) => {
+    if (!process.env.RESEND_API_KEY) { logger.warn("RESEND_API_KEY not set, skipping welcome email"); return; }
+  const resend = new Resend(process.env.RESEND_API_KEY);
   const trialEnd = new Date(trialEndsAt).toLocaleDateString("en-US", {
     month: "long", day: "numeric", year: "numeric"
   });
@@ -40,3 +41,4 @@ const sendWelcomeEmail = async (email, company, apiKey, trialEndsAt) => {
 };
 
 module.exports = { sendWelcomeEmail };
+
